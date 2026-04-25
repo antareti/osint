@@ -3,192 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFEX OSINT ELITE | ULTIMATE EDITION</title>
+    <title>INFEX OSINT | GLOBAL ELITE SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root { --gold: #d4af37; --dark: #050505; --neon: #00ff41; }
-        body { background: var(--dark); color: #eee; font-family: 'Courier New', monospace; overflow-x: hidden; }
-        .gold-border { border: 1px solid var(--gold); box-shadow: 0 0 15px rgba(212,175,55,0.2); }
-        .gold-text { color: var(--gold); text-shadow: 0 0 5px var(--gold); }
-        .card { background: rgba(10,10,10,0.9); border-radius: 4px; border: 1px solid rgba(212,175,55,0.2); transition: 0.3s; }
-        .card:hover { border-color: var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.1); }
-        .btn-gold { background: var(--gold); color: black; font-weight: bold; transition: 0.3s; border: none; cursor: pointer; }
-        .btn-gold:hover { filter: brightness(1.2); box-shadow: 0 0 15px var(--gold); transform: translateY(-2px); }
-        input, select { background: #111 !important; border: 1px solid #333 !important; color: var(--gold) !important; outline: none; padding: 10px; }
-        input:focus { border-color: var(--gold) !important; }
-        .terminal { background: #000; border: 1px solid #222; height: 200px; overflow-y: auto; font-size: 11px; padding: 10px; color: var(--neon); }
-        #drop-zone { border: 2px dashed #333; transition: 0.3s; }
+        
+        body { 
+            background: var(--dark); 
+            color: #eee; 
+            font-family: 'Courier New', monospace; 
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at center, #111 0%, #050505 100%);
+        }
+
+        /* Luxury Aesthetic */
+        .gold-border { border: 1px solid var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.15); }
+        .gold-text { color: var(--gold); text-shadow: 0 0 8px rgba(212,175,55,0.4); }
+        
+        .card { 
+            background: rgba(10,10,10,0.95); 
+            border: 1px solid rgba(212,175,55,0.2); 
+            border-radius: 4px; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card:hover { border-color: var(--gold); box-shadow: 0 0 25px rgba(212,175,55,0.1); transform: translateY(-2px); }
+
+        .btn-gold { 
+            background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728);
+            color: black; font-weight: 900; transition: 0.3s; border: none; cursor: pointer;
+        }
+        .btn-gold:hover { transform: scale(1.02); box-shadow: 0 0 20px var(--gold); filter: brightness(1.1); }
+
+        /* Terminal & Input */
+        .terminal { background: #000; border: 1px solid #222; height: 180px; overflow-y: auto; font-size: 11px; padding: 12px; color: var(--neon); }
+        input { background: #0a0a0a !important; border: 1px solid #333 !important; color: var(--gold) !important; outline: none; }
+        input:focus { border-color: var(--gold) !important; box-shadow: 0 0 10px rgba(212,175,55,0.1); }
+
+        /* Animations */
+        @keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
+        .scan-line { position: absolute; width: 100%; height: 2px; background: var(--gold); opacity: 0.2; animation: scan 3s linear infinite; }
+        .scanning { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* File Drop Zone */
+        #drop-zone { border: 2px dashed #222; transition: 0.3s; }
         #drop-zone.active { border-color: var(--gold); background: rgba(212,175,55,0.05); }
-        .node { stroke: var(--gold); stroke-width: 2; fill: #000; }
-        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
-        .scanning { animation: pulse 1s infinite; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div class="max-w-7xl mx-auto">
-        <header class="text-center mb-8 p-6 gold-border rounded-lg relative overflow-hidden">
-            <h1 class="text-5xl font-black gold-text tracking-tighter">INFEX OSINT v3.0</h1>
-            <p class="text-gray-500 uppercase tracking-[8px] text-[10px] mt-2">Elite Intelligence & Data Extraction System</p>
+    <div class="max-w-7xl mx-auto relative">
+        <header class="text-center mb-10 p-8 gold-border rounded-lg relative overflow-hidden bg-black">
+            <div class="scan-line"></div>
+            <h1 class="text-6xl font-black gold-text tracking-tighter mb-2">INFEX OSINT</h1>
+            <p class="text-gray-500 uppercase tracking-[15px] text-[10px]">Elite Digital Intelligence Hub</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div class="lg:col-span-2 card p-6">
-                <label class="block text-[10px] text-gray-500 mb-2 uppercase">Main Target Input</label>
-                <div class="flex gap-2">
-                    <input type="text" id="target" class="w-full text-xl" placeholder="Nickname, Email, IP, Phone...">
-                    <button onclick="runGlobalSearch()" class="btn-gold px-10 uppercase">Analyze</button>
+                <label class="text-[10px] text-gray-500 uppercase mb-2 block">Введите цель (Nickname / IP / Email / Domain)</label>
+                <div class="flex flex-col md:flex-row gap-3">
+                    <input type="text" id="targetInput" class="flex-grow p-4 text-xl font-bold rounded" placeholder="bitsniffer...">
+                    <button onclick="masterProtocol()" class="btn-gold px-12 py-4 uppercase">Анализировать</button>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
-                    <button onclick="quickDork('pass')" class="text-[9px] bg-red-900/20 border border-red-900 text-red-500 p-2 uppercase hover:bg-red-900/40">Passwords</button>
-                    <button onclick="quickDork('docs')" class="text-[9px] bg-blue-900/20 border border-blue-900 text-blue-500 p-2 uppercase hover:bg-blue-900/40">Docs/PDF</button>
-                    <button onclick="quickDork('env')" class="text-[9px] bg-green-900/20 border border-green-900 text-green-500 p-2 uppercase hover:bg-green-900/40">Config/Env</button>
-                    <button onclick="quickDork('cam')" class="text-[9px] bg-yellow-900/20 border border-yellow-900 text-yellow-500 p-2 uppercase hover:bg-yellow-900/40">Live Cam</button>
+                
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <button onclick="quickDork('leak')" class="text-[9px] border border-red-900/50 text-red-500 p-2 uppercase hover:bg-red-900/20">Поиск утечек</button>
+                    <button onclick="quickDork('docs')" class="text-[9px] border border-blue-900/50 text-blue-500 p-2 uppercase hover:bg-blue-900/20">Документы</button>
+                    <button onclick="quickDork('env')" class="text-[9px] border border-green-900/50 text-green-500 p-2 uppercase hover:bg-green-900/20">Конфигурации</button>
+                    <button onclick="quickDork('social')" class="text-[9px] border border-gold/30 text-gold p-2 uppercase hover:bg-gold/10">Соц. сети</button>
                 </div>
             </div>
 
-            <div class="card p-6" id="drop-zone">
-                <label class="block text-[10px] text-gray-500 mb-2 uppercase text-center">Metadata Extractor (Drag & Drop File)</label>
-                <div class="text-center py-4">
-                    <i class="fas fa-file-import text-3xl mb-2 text-gray-700"></i>
-                    <p class="text-[10px] text-gray-500">Drop Image or Doc to parse EXIF/Meta</p>
-                    <input type="file" id="file-input" class="hidden" onchange="handleFile(this.files[0])">
-                    <button onclick="document.getElementById('file-input').click()" class="mt-2 text-[9px] underline text-gold">Browse File</button>
-                </div>
-                <div id="file-info" class="text-[9px] text-green-600 font-mono mt-2 h-10 overflow-hidden"></div>
+            <div class="card p-6 flex flex-col justify-center items-center relative" id="drop-zone">
+                <i class="fas fa-camera-retro text-3xl mb-3 text-gray-700"></i>
+                <h3 class="text-[10px] text-gray-500 uppercase mb-2">Metadata Extractor</h3>
+                <input type="file" id="fileInput" class="hidden" onchange="handleMetadata(this.files[0])">
+                <button onclick="document.getElementById('fileInput').click()" class="text-xs gold-text underline hover:text-white transition">Загрузить фото для анализа</button>
+                <div id="metaResult" class="mt-4 text-[10px] text-center text-green-500 font-mono h-12 overflow-y-auto"></div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="card p-4">
-                <h3 class="gold-text text-sm mb-4"><i class="fas fa-network-wired mr-2"></i> RELATIONS GRAPH</h3>
-                <div id="graph-area" class="h-64 flex items-center justify-center border border-gray-900 relative">
-                    <div id="graph-main" class="w-16 h-16 rounded-full border-2 border-gold flex items-center justify-center text-[10px] gold-text scanning">TARGET</div>
-                    </div>
-            </div>
-            
-            <div class="card p-4">
-                <h3 class="gold-text text-sm mb-4"><i class="fas fa-search-location mr-2"></i> GLOBAL VECTORS</h3>
-                <div id="vectorBox" class="space-y-2 text-[11px]">
-                    <p class="text-gray-700 italic">No active scan...</p>
+            <div class="card p-5">
+                <h3 class="gold-text text-sm mb-4 uppercase"><i class="fas fa-sitemap mr-2"></i> Relations Graph</h3>
+                <div id="graph-area" class="h-64 border border-gray-900 rounded flex flex-col items-center justify-center relative">
+                    <div id="target-node" class="w-20 h-20 rounded-full border-2 border-gold flex items-center justify-center text-[10px] text-center p-2 font-bold bg-black z-10">WAITING</div>
+                    <div class="absolute w-full h-full opacity-10" id="graph-bg"></div>
                 </div>
             </div>
 
-            <div class="card p-4">
-                <h3 class="gold-text text-sm mb-4"><i class="fas fa-shield-virus mr-2"></i> LEAK ANALYZER</h3>
-                <div id="leakBox" class="space-y-2 text-[11px]">
-                    <p class="text-gray-700 italic">Ready for deep dive...</p>
+            <div class="card p-5">
+                <h3 class="gold-text text-sm mb-4 uppercase"><i class="fas fa-project-diagram mr-2"></i> Vectors</h3>
+                <div id="vectorList" class="space-y-2 text-[11px]">
+                    <p class="text-gray-700 italic">Сканирование не запущено...</p>
+                </div>
+            </div>
+
+            <div class="card p-5">
+                <h3 class="gold-text text-sm mb-4 uppercase"><i class="fas fa-database mr-2"></i> Intelligence Data</h3>
+                <div id="intelList" class="space-y-2 text-[11px]">
+                    <p class="text-gray-700 italic">Базы в режиме ожидания...</p>
                 </div>
             </div>
         </div>
 
-        <div class="terminal font-mono mb-4" id="console">
-            <div>> [SYSTEM] INFEX OSINT BOOTED. STANDING BY FOR MASTER COMMAND...</div>
+        <div class="terminal font-mono mb-4 shadow-2xl" id="terminal">
+            <div>> [SYSTEM] INFEX OSINT BOOTED AT <span id="bootTime"></span></div>
+            <div>> [STATUS] READY FOR MASTER COMMAND.</div>
         </div>
-        <div class="flex justify-between">
-            <button onclick="clearAll()" class="text-[10px] text-gray-600 uppercase hover:text-white">[Clear System]</button>
-            <button onclick="exportFullReport()" class="text-[10px] text-gold uppercase font-bold hover:underline">[Generate Master Report]</button>
+
+        <div class="flex justify-between items-center px-2">
+            <span class="text-[9px] text-gray-700 uppercase tracking-widest">Encrypted Session</span>
+            <button onclick="generateReport()" class="text-[10px] gold-text uppercase font-bold border-b border-gold hover:text-white transition">Сгенерировать финальный отчет</button>
         </div>
     </div>
 
     <script>
-        const log = (msg, color = "#00ff41") => {
-            const con = document.getElementById('console');
-            con.innerHTML += `<div><span style="color: #444">[${new Date().toLocaleTimeString()}]</span> <span style="color: ${color}">> ${msg}</span></div>`;
-            con.scrollTop = con.scrollHeight;
-        };
+        const terminal = document.getElementById('terminal');
+        document.getElementById('bootTime').innerText = new Date().toLocaleString();
 
-        function createAction(parent, title, url) {
-            const p = document.getElementById(parent);
-            if(p.innerText.includes("No active")) p.innerHTML = "";
+        function log(msg, color = "#00ff41") {
             const div = document.createElement('div');
-            div.className = "flex justify-between items-center p-2 bg-white/5 hover:bg-gold/10 rounded cursor-pointer transition border border-transparent hover:border-gold/30";
-            div.innerHTML = `<span>${title}</span> <i class="fas fa-external-link-alt text-[9px] text-gold/50"></i>`;
+            div.innerHTML = `<span style="color: #444">[${new Date().toLocaleTimeString()}]</span> <span style="color: ${color}">> ${msg}</span>`;
+            terminal.appendChild(div);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function createLink(containerId, title, url) {
+            const container = document.getElementById(containerId);
+            if(container.innerText.includes("режиме") || container.innerText.includes("запущено")) container.innerHTML = "";
+            const div = document.createElement('div');
+            div.className = "flex justify-between items-center p-2 bg-white/5 border border-gray-900 rounded hover:border-gold/50 cursor-pointer transition";
+            div.innerHTML = `<span>${title}</span> <i class="fas fa-external-link-alt text-[9px] text-gold/60"></i>`;
             div.onclick = () => window.open(url, '_blank');
-            p.appendChild(div);
+            container.appendChild(div);
         }
 
-        function quickDork(type) {
-            const val = document.getElementById('target').value;
-            if(!val) return alert("Введите цель!");
-            let query = "";
-            switch(type) {
-                case 'pass': query = `site:pastebin.com OR site:ghostbin.com "${val}" password`; break;
-                case 'docs': query = `site:*.* "${val}" filetype:pdf OR filetype:doc OR filetype:xlsx`; break;
-                case 'env': query = `site:*.* "${val}" ext:env OR ext:log OR ext:ini OR ext:conf`; break;
-                case 'cam': query = `inurl:"view.shtml" "Network Camera" "${val}"`; break;
-            }
-            window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
-            log(`Dork executed: ${type} for ${val}`, "#d4af37");
-        }
-
-        function runGlobalSearch() {
-            const val = document.getElementById('target').value.trim();
-            if(!val) return;
-            
-            log(`Инициирован глобальный протокол: ${val}`, "#d4af37");
-            document.getElementById('vectorBox').innerHTML = "";
-            document.getElementById('leakBox').innerHTML = "";
-            
-            // Visual Graph Animation
-            document.getElementById('graph-main').innerText = val.substring(0, 10);
-            
-            // Socials
-            createAction('vectorBox', "WhatsMyName Enumerator", `https://whatsmyname.app/?q=${val}`);
-            createAction('vectorBox', "Epieos (Email/Identity)", `https://epieos.com/?q=${val}`);
-            createAction('vectorBox', "Social Search Engine", `https://www.social-searcher.com/search-users/?q=${val}`);
-            
-            // Infra
-            createAction('vectorBox', "Shodan IoT Search", `https://www.shodan.io/search?query=${val}`);
-            createAction('vectorBox', "Censys Network Hosts", `https://search.censys.io/search?resource=hosts&q=${val}`);
-            
-            // Leaks
-            createAction('leakBox', "IntelX Intelligence", `https://intelx.io/?s=${val}`);
-            createAction('leakBox', "LeakIX (Exploits/Leaks)", `https://leakix.net/search?q=${val}`);
-            createAction('leakBox', "Wayback Machine Archive", `https://web.archive.org/web/*/${val}`);
-            createAction('leakBox', "DeHashed Public Preview", `https://dehashed.com/search?query=${val}`);
-
-            log("Протокол выполнен. Найдены активные векторы в 3 категориях.");
-        }
-
-        // Metadata Simulation (JS client-side parsing)
-        function handleFile(file) {
+        // --- Metadata Logic (EXIF) ---
+        function handleMetadata(file) {
             if(!file) return;
-            log(`Анализ файла: ${file.name}...`, "#3b82f6");
-            document.getElementById('file-info').innerText = "Reading headers...";
-            
-            setTimeout(() => {
-                const info = `Name: ${file.name}\nSize: ${file.size} bytes\nType: ${file.type}\nLastMod: ${new Date(file.lastModified).toLocaleDateString()}`;
-                document.getElementById('file-info').innerText = info;
-                log("Метаданные извлечены локально.", "#3b82f6");
-            }, 1000);
+            const resBox = document.getElementById('metaResult');
+            resBox.innerHTML = "<span class='scanning'>ЧТЕНИЕ EXIF...</span>";
+            log(`Анализ файла: ${file.name}`, "#3b82f6");
+
+            if(file.type.match('image.*')) {
+                EXIF.getData(file, function() {
+                    const make = EXIF.getTag(this, "Make") || "N/A";
+                    const model = EXIF.getTag(this, "Model") || "N/A";
+                    const date = EXIF.getTag(this, "DateTime") || "N/A";
+                    const gps = EXIF.getTag(this, "GPSLatitude") ? "GPS FOUND" : "NO GPS";
+                    
+                    resBox.innerHTML = `DEVICE: ${make} ${model}<br>DATE: ${date} | ${gps}`;
+                    log(`Метаданные извлечены. Устройство: ${make} ${model}`, "#3b82f6");
+                    if(gps === "GPS FOUND") log("ВНИМАНИЕ: Обнаружены координаты!", "red");
+                });
+            } else {
+                resBox.innerHTML = `FILE: ${file.name}<br>SIZE: ${(file.size/1024).toFixed(1)} KB`;
+                log("Файл не является изображением. Расширенный EXIF пропущен.");
+            }
         }
 
-        // Export Report
-        function exportFullReport() {
-            const val = document.getElementById('target').value || "UNKNOWN";
-            const content = `INFEX OSINT REPORT\n====================\nTarget: ${val}\nGenerated: ${new Date().toLocaleString()}\n\nLogs:\n` + document.getElementById('console').innerText;
+        // --- Main OSINT Protocol ---
+        function masterProtocol() {
+            const val = document.getElementById('targetInput').value.trim();
+            if(!val) return;
+
+            log(`Запуск протокола для: ${val}`, "#d4af37");
+            document.getElementById('target-node').innerText = val.toUpperCase();
+            document.getElementById('target-node').classList.add('scanning');
+
+            const vectors = document.getElementById('vectorList');
+            const intel = document.getElementById('intelList');
+            vectors.innerHTML = ""; intel.innerHTML = "";
+
+            setTimeout(() => {
+                // Vectors
+                createLink('vectorList', "WhatsMyName (Search)", `https://whatsmyname.app/?q=${val}`);
+                createLink('vectorList', "Epieos (Email/ID)", `https://epieos.com/?q=${val}`);
+                createLink('vectorList', "Social Search Engine", `https://www.social-searcher.com/search-users/?q=${val}`);
+                createLink('vectorList', "Sherlock GitHub", `https://github.com/search?q=${val}&type=users`);
+
+                // Intel & Infra
+                createLink('intelList', "Shodan Global Search", `https://www.shodan.io/search?query=${val}`);
+                createLink('intelList', "IntelX Data Leaks", `https://intelx.io/?s=${val}`);
+                createLink('intelList', "Censys Host View", `https://search.censys.io/search?resource=hosts&q=${val}`);
+                createLink('intelList', "LeakIX (Vulnerabilities)", `https://leakix.net/search?q=${val}`);
+                createLink('intelList', "Wayback Machine Archive", `https://web.archive.org/web/*/${val}`);
+
+                log("Протокол выполнен. Все узлы синхронизированы.");
+                document.getElementById('target-node').classList.remove('scanning');
+            }, 800);
+        }
+
+        // --- Dork Constructor ---
+        function quickDork(type) {
+            const val = document.getElementById('targetInput').value;
+            if(!val) return alert("Введите цель!");
+            let q = "";
+            switch(type) {
+                case 'leak': q = `site:pastebin.com OR site:ghostbin.com "${val}" password`; break;
+                case 'docs': q = `site:*.* "${val}" filetype:pdf OR filetype:doc OR filetype:xlsx`; break;
+                case 'env': q = `site:*.* "${val}" ext:env OR ext:log OR ext:ini OR ext:sql`; break;
+                case 'social': q = `site:instagram.com OR site:facebook.com OR site:linkedin.com "${val}"`; break;
+            }
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
+            log(`Dork запущен: ${type}`, "#bf953f");
+        }
+
+        // --- Report Generation ---
+        function generateReport() {
+            const val = document.getElementById('targetInput').value || "UNKNOWN";
+            const content = `INFEX OSINT MASTER REPORT\n=========================\nTarget: ${val}\nDate: ${new Date().toLocaleString()}\n\nLogs:\n` + terminal.innerText;
             const blob = new Blob([content], {type: 'text/plain'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `INFEX_REPORT_${val.toUpperCase()}.txt`;
+            a.download = `INFEX_REPORT_${val}.txt`;
             a.click();
-            log("Полный отчет сформирован и скачан.", "#fff");
+            log("Отчет сформирован и отправлен на загрузку.");
         }
 
-        function clearAll() {
-            location.reload();
-        }
-
-        // Drag and Drop Logic
+        // Drag & Drop visual logic
         const dz = document.getElementById('drop-zone');
         dz.ondragover = (e) => { e.preventDefault(); dz.classList.add('active'); };
         dz.ondragleave = () => dz.classList.remove('active');
         dz.ondrop = (e) => {
             e.preventDefault();
             dz.classList.remove('active');
-            handleFile(e.dataTransfer.files[0]);
+            handleMetadata(e.dataTransfer.files[0]);
         };
     </script>
 </body>
