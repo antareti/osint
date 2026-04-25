@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>INFEX OSINT | GLOBAL ELITE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --gold: #d4af37; --dark: #050505; }
+        body { background: var(--dark); color: #eee; font-family: 'Courier New', monospace; }
+        .gold-border { border: 1px solid var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.1); }
+        .btn-gold { background: var(--gold); color: black; font-weight: bold; transition: 0.3s; }
+        .btn-gold:hover { background: #fff; box-shadow: 0 0 20px var(--gold); }
+        .card { background: rgba(15,15,15,0.9); border-radius: 8px; padding: 1.5rem; }
+        .terminal-text { color: #00ff41; text-shadow: 0 0 5px #00ff41; }
+        input { border-bottom: 2px solid var(--gold) !important; background: transparent !important; outline: none; color: var(--gold); }
+    </style>
+</head>
+<body class="p-5">
+
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-10 p-8 gold-border rounded-xl">
+            <h1 class="text-6xl font-black tracking-tighter" style="color: var(--gold)">INFEX.HTML</h1>
+            <p class="text-gray-500 mt-2 uppercase tracking-[10px]">Unfiltered Intelligence Gathering</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <input type="text" id="mainInput" placeholder="NICKNAME / EMAIL / DOMAIN / IP" class="md:col-span-3 p-4 text-2xl">
+            <button onclick="masterSearch()" class="btn-gold p-4 uppercase">Запустить протокол</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="card gold-border">
+                <h2 class="text-xl mb-4 text-yellow-500"><i class="fas fa-user-secret mr-2"></i> SOCIAL ENUMERATION</h2>
+                <div id="socialBox" class="space-y-2 text-sm"></div>
+            </div>
+
+            <div class="card gold-border">
+                <h2 class="text-xl mb-4 text-yellow-500"><i class="fas fa-network-wired mr-2"></i> INFRASTRUCTURE</h2>
+                <div id="infraBox" class="space-y-2 text-sm"></div>
+            </div>
+
+            <div class="card gold-border">
+                <h2 class="text-xl mb-4 text-yellow-500"><i class="fas fa-database mr-2"></i> LEAKS & DORKS</h2>
+                <div id="leakBox" class="space-y-2 text-sm"></div>
+            </div>
+        </div>
+
+        <div class="mt-8 p-4 bg-black border border-gray-800 rounded h-40 overflow-y-auto font-mono text-xs" id="console">
+            <div class="terminal-text">> SYSTEM ONLINE. WAITING FOR MASTER...</div>
+        </div>
+    </div>
+
+    <script>
+        function log(msg) {
+            const c = document.getElementById('console');
+            c.innerHTML += `<div><span class="text-gray-600">[${new Date().toLocaleTimeString()}]</span> <span class="terminal-text">${msg}</span></div>`;
+            c.scrollTop = c.scrollHeight;
+        }
+
+        function createAction(parent, title, url) {
+            const div = document.createElement('div');
+            div.className = "flex justify-between items-center border-b border-gray-800 pb-2 hover:bg-gray-900 p-1 transition cursor-pointer";
+            div.innerHTML = `<span>${title}</span> <i class="fas fa-external-link-alt text-xs text-yellow-700"></i>`;
+            div.onclick = () => window.open(url, '_blank');
+            parent.appendChild(div);
+        }
+
+        function masterSearch() {
+            const val = document.getElementById('mainInput').value.trim();
+            if(!val) return;
+
+            log(`Инициация глобального поиска для: ${val}`);
+            
+            const boxes = ['socialBox', 'infraBox', 'leakBox'];
+            boxes.forEach(id => document.getElementById(id).innerHTML = "");
+
+            // --- SOCIAL MODULE ---
+            const sBox = document.getElementById('socialBox');
+            createAction(sBox, "WhatsMyName (User Search)", `https://whatsmyname.app/?q=${val}`);
+            createAction(sBox, "Sherlock Search (GitHub)", `https://github.com/search?q=${val}&type=users`);
+            createAction(sBox, "Instant Checkmate", `https://www.instantcheckmate.com/search?q=${val}`);
+            createAction(sBox, "Social-Searcher", `https://www.social-searcher.com/search-users/?q=${val}`);
+
+            // --- INFRA MODULE ---
+            const iBox = document.getElementById('infraBox');
+            createAction(iBox, "DNSDumpster", `https://dnsdumpster.com/`);
+            createAction(iBox, "Shodan (IP/Host)", `https://www.shodan.io/search?query=${val}`);
+            createAction(iBox, "Censys Search", `https://search.censys.io/search?resource=hosts&q=${val}`);
+            createAction(iBox, "IP-API (Geo JSON)", `https://ipapi.co/${val}/json/`);
+            createAction(iBox, "VirusTotal Analysis", `https://www.virustotal.com/gui/search/${val}`);
+
+            // --- LEAK & DORKS MODULE ---
+            const lBox = document.getElementById('leakBox');
+            createAction(lBox, "IntelX (Leak Search)", `https://intelx.io/?s=${val}`);
+            createAction(lBox, "Google Dork: Files", `https://www.google.com/search?q=site:*.* filetype:pdf OR filetype:doc "${val}"`);
+            createAction(lBox, "Google Dork: Configs", `https://www.google.com/search?q=site:*.* "${val}" ext:env OR ext:conf`);
+            createAction(lBox, "Wayback Machine", `https://web.archive.org/web/*/${val}`);
+            createAction(lBox, "LeakIX", `https://leakix.net/search?q=${val}`);
+
+            log("Протокол выполнен. Все модули подгрузили внешние триггеры.");
+        }
+    </script>
+</body>
+</html>
