@@ -3,134 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFEX OSINT | GOVERNMENT GRADE ANALYTICS</title>
+    <title>INFEX OSINT PRO | GOVERNMENT EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --gold: #d4af37; --dark: #020202; --neon: #00ff41; --red: #ff003c; }
+        :root { --gold: #d4af37; --dark: #050505; --neon: #00ff41; }
         body { 
             background: var(--dark); color: #eee; font-family: 'Courier New', monospace; 
-            background-image: linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px; min-height: 100vh; overflow-x: hidden;
+            background-image: linear-gradient(rgba(0, 255, 65, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 65, 0.02) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
-        .gold-border { border: 1px solid var(--gold); box-shadow: 0 0 30px rgba(212,175,55,0.1); }
+        .gold-border { border: 1px solid var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.2); }
         .gold-text { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
-        .card { background: rgba(5,5,5,0.95); border: 1px solid rgba(212,175,55,0.25); position: relative; overflow: hidden; }
-        .card::before { content: ""; position: absolute; width: 100%; height: 1px; background: var(--gold); top: 0; left: -100%; animation: scan-line 3s infinite; }
-        @keyframes scan-line { 0% { left: -100%; } 100% { left: 100%; } }
+        .card { background: rgba(10,10,10,0.95); border: 1px solid rgba(212,175,55,0.3); border-radius: 4px; }
         
-        .btn-gold { background: var(--gold); color: black; font-weight: 900; transition: 0.3s; }
-        .btn-gold:hover { background: #fff; box-shadow: 0 0 25px var(--gold); letter-spacing: 2px; }
+        /* КНОПКА ЗАПУСКА */
+        .btn-execute { 
+            background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728);
+            color: black; font-weight: 900; transition: 0.4s; border: none; cursor: pointer;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+        }
+        .btn-execute:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--gold); filter: brightness(1.2); }
+        .btn-execute:active { transform: scale(0.95); }
+
+        .terminal { background: #000; border: 1px solid #1a1a1a; height: 200px; overflow-y: auto; font-size: 11px; padding: 15px; color: var(--neon); }
+        input { background: #000 !important; border: 1px solid #333 !important; color: var(--gold) !important; outline: none; }
+        input:focus { border-color: var(--gold) !important; }
+
+        /* ГРАФ */
+        .node { position: absolute; font-size: 9px; color: var(--neon); background: rgba(0,255,65,0.1); padding: 3px 8px; border: 1px solid var(--neon); border-radius: 2px; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .scanning-active { animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.1); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
         
-        .terminal { background: rgba(0,0,0,0.9); border: 1px solid #1a1a1a; height: 250px; overflow-y: auto; font-size: 10px; padding: 15px; color: var(--neon); box-shadow: inset 0 0 20px #000; }
-        input { background: #000 !important; border: 1px solid #222 !important; color: var(--gold) !important; text-align: center; letter-spacing: 2px; }
-        
-        .node { position: absolute; font-size: 9px; color: var(--neon); background: rgba(0,255,65,0.1); padding: 2px 5px; border: 1px solid var(--neon); border-radius: 3px; animation: node-fade 0.5s ease-out; }
-        @keyframes node-fade { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
-        
-        .scanning-circle { border: 2px dashed var(--gold); animation: spin 10s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        
-        .glitch { animation: glitch 1s linear infinite; }
-        @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
+        #drop-zone { border: 2px dashed #222; transition: 0.3s; cursor: pointer; }
+        #drop-zone:hover { border-color: var(--gold); background: rgba(212,175,55,0.05); }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-10">
 
     <div class="max-w-7xl mx-auto">
-        <header class="text-center mb-6 p-6 gold-border rounded bg-black">
-            <div class="flex justify-between text-[8px] text-gray-600 mb-4">
-                <span>SECURE LINE: ACTIVE</span>
-                <span class="glitch text-red-600">CLASSIFIED INFORMATION</span>
-                <span id="session-id">SID: ...</span>
-            </div>
-            <h1 class="text-5xl font-black gold-text tracking-tighter mb-2 italic">INFEX OSINT PRO</h1>
-            <p class="text-gray-500 uppercase tracking-[20px] text-[9px]">Advanced Reconnaissance Framework</p>
+        <header class="text-center mb-8 p-6 gold-border rounded bg-black">
+            <h1 class="text-6xl font-black gold-text tracking-tighter mb-2 italic">INFEX PRO</h1>
+            <p class="text-gray-500 uppercase tracking-[15px] text-[10px]">Strategic Data Reconnaissance v4.5</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-            <div class="lg:col-span-3 card p-6 flex flex-col justify-center">
-                <input type="text" id="targetInput" class="w-full p-4 text-2xl font-bold rounded mb-4" placeholder="ENTER TARGET DATA">
-                <div class="grid grid-cols-4 gap-2">
-                    <button onclick="quickDork('leak')" class="text-[8px] border border-red-500 text-red-500 p-2 uppercase hover:bg-red-500 hover:text-white transition">Leaks</button>
-                    <button onclick="quickDork('docs')" class="text-[8px] border border-blue-500 text-blue-500 p-2 uppercase hover:bg-blue-500 hover:text-white transition">Internal</button>
-                    <button onclick="quickDork('env')" class="text-[8px] border border-green-500 text-green-500 p-2 uppercase hover:bg-green-500 hover:text-white transition">Config</button>
-                    <button onclick="quickDork('social')" class="text-[8px] border border-gold text-gold p-2 uppercase hover:bg-gold hover:text-black transition">Social</button>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
+            <div class="lg:col-span-3 card p-6">
+                <label class="text-[10px] text-gray-500 uppercase mb-2 block">Target Identification</label>
+                <input type="text" id="targetInput" class="w-full p-4 text-2xl font-bold rounded" placeholder="NICKNAME, EMAIL, IP OR DOMAIN">
+                <div class="flex gap-2 mt-4">
+                    <button onclick="quickDork('leak')" class="flex-grow text-[9px] border border-red-900 text-red-500 p-2 uppercase hover:bg-red-900/20 transition">Leaks</button>
+                    <button onclick="quickDork('docs')" class="flex-grow text-[9px] border border-blue-900 text-blue-500 p-2 uppercase hover:bg-blue-900/20 transition">Internal Docs</button>
+                    <button onclick="quickDork('social')" class="flex-grow text-[9px] border border-gold/30 text-gold p-2 uppercase hover:bg-gold/10 transition">Social Matrix</button>
                 </div>
             </div>
-            <div class="card p-6 flex flex-col items-center justify-center">
-                <button onclick="masterProtocol()" id="startBtn" class="btn-gold w-full h-full p-4 uppercase text-xl leading-none">Execute<br><span class="text-xs">Protocol</span></button>
+            <button onclick="masterProtocol()" id="startBtn" class="btn-execute rounded p-6 flex flex-col items-center justify-center gap-2">
+                <i class="fas fa-bolt text-2xl"></i>
+                <span class="text-xl uppercase">Execute</span>
+                <span class="text-[10px] opacity-70">Protocol v4.5</span>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+            <div class="lg:col-span-5 card p-4 h-[350px] relative overflow-hidden bg-black">
+                <h3 class="gold-text text-xs mb-4 uppercase font-bold"><i class="fas fa-project-diagram mr-2"></i> Relation Graph</h3>
+                <div id="graph-area" class="w-full h-full relative">
+                    <div id="target-node" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border-2 border-gold flex items-center justify-center text-[10px] text-center p-2 font-bold bg-black z-20 gold-text">AWAITING</div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card p-4 flex flex-col">
+                    <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2">Intelligence Vectors</h3>
+                    <div id="vectorList" class="space-y-2 flex-grow overflow-y-auto max-h-[250px]">
+                        <p class="text-gray-700 italic text-[10px]">No active links...</p>
+                    </div>
+                </div>
+
+                <div class="card p-4 flex flex-col">
+                    <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2">Metadata Engine</h3>
+                    <div id="drop-zone" class="flex-grow flex flex-col items-center justify-center p-4 rounded" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt text-2xl mb-2 text-gray-700"></i>
+                        <span class="text-[10px] text-gray-500 uppercase text-center">Click to upload or Drag & Drop Photo</span>
+                        <input type="file" id="fileInput" class="hidden" onchange="handleMetadata(this.files[0])">
+                        <div id="metaResult" class="mt-4 text-[9px] text-green-500 font-mono text-center"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
-            <div class="md:col-span-5 card p-4 h-[400px] flex flex-col">
-                <h3 class="gold-text text-xs mb-2 uppercase italic font-bold">Neural Relation Map</h3>
-                <div id="graph-area" class="flex-grow border border-gray-900 rounded relative overflow-hidden bg-[#050505]">
-                    <div class="absolute inset-0 scanning-circle opacity-20 m-10"></div>
-                    <div id="target-node" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full border-2 border-gold flex items-center justify-center text-[9px] text-center p-3 font-bold bg-black z-10 gold-text">AWAITING TARGET</div>
-                </div>
-            </div>
-
-            <div class="md:col-span-7 space-y-6">
-                <div class="grid grid-cols-2 gap-4 h-full">
-                    <div class="card p-4">
-                        <h3 class="gold-text text-[10px] mb-3 uppercase font-bold border-b border-gold/30 pb-1">Primary Vectors</h3>
-                        <div id="vectorList" class="space-y-2 overflow-y-auto max-h-[120px]"></div>
-                    </div>
-                    <div class="card p-4">
-                        <h3 class="gold-text text-[10px] mb-3 uppercase font-bold border-b border-gold/30 pb-1">Intel Nodes</h3>
-                        <div id="intelList" class="space-y-2 overflow-y-auto max-h-[120px]"></div>
-                    </div>
-                    <div class="card col-span-2 p-4">
-                        <h3 class="gold-text text-[10px] mb-3 uppercase font-bold border-b border-gold/30 pb-1">Metadata Engine</h3>
-                        <div id="drop-zone" class="border border-dashed border-gray-800 p-4 rounded text-center">
-                            <input type="file" id="fileInput" class="hidden" onchange="handleMetadata(this.files[0])">
-                            <button onclick="document.getElementById('fileInput').click()" class="text-[10px] text-gray-400 hover:text-gold uppercase">Drag/Drop or Click to Parse Metadata</button>
-                            <div id="metaResult" class="mt-2 text-[9px] text-green-500 font-mono"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="terminal font-mono mb-4 shadow-2xl" id="terminal">
+            <div>> [SYSTEM] INFEX OSINT BOOTED. SESSION ENCRYPTED.</div>
         </div>
 
-        <div class="terminal font-mono mb-4 border-l-4 border-l-gold" id="terminal"></div>
-
-        <div class="flex justify-between items-center text-[9px]">
-            <div class="text-gray-600 uppercase">Risk Level: <span id="risk-lvl" class="text-green-500">LOW</span></div>
-            <button onclick="generateReport()" class="gold-text uppercase font-bold hover:text-white transition">Download Government Grade Report (.TXT)</button>
+        <div class="flex justify-between items-center text-[10px]">
+            <span class="text-gray-700 uppercase">Status: <span class="text-green-600">Standby</span></span>
+            <button onclick="generateReport()" class="gold-text uppercase font-bold border-b border-gold hover:text-white transition">Download Analytical Report (.TXT)</button>
         </div>
     </div>
 
     <script>
         const terminal = document.getElementById('terminal');
-        document.getElementById('session-id').innerText = "SID: " + Math.random().toString(36).substr(2, 9).toUpperCase();
 
         function log(msg, color = "#00ff41") {
             const div = document.createElement('div');
-            div.innerHTML = `<span class="text-gray-700">[${new Date().toISOString()}]</span> <span style="color: ${color}"> >> ${msg}</span>`;
+            div.innerHTML = `<span style="color: #444">[${new Date().toLocaleTimeString()}]</span> <span style="color: ${color}">> ${msg}</span>`;
             terminal.appendChild(div);
             terminal.scrollTop = terminal.scrollHeight;
-        }
-
-        function detectType(input) {
-            if(input.includes("@")) return "EMAIL_ADDRESS";
-            if(/^\d+\.\d+\.\d+\.\d+$/.test(input)) return "IPV4_ADDRESS";
-            if(input.includes(".")) return "DOMAIN_HOST";
-            return "ALPHANUMERIC_NICKNAME";
         }
 
         function addNode(name) {
             const area = document.getElementById("graph-area");
             const node = document.createElement("div");
             node.className = "node";
-            // Случайная позиция вокруг центра
+            
+            // Расчет позиции "взрыва" из центра
             const angle = Math.random() * Math.PI * 2;
-            const dist = 60 + Math.random() * 80;
-            const x = 50 + Math.cos(angle) * dist / 2;
-            const y = 50 + Math.sin(angle) * dist / 2;
+            const dist = 70 + Math.random() * 80;
+            const x = 50 + Math.cos(angle) * (dist/2.5);
+            const y = 50 + Math.sin(angle) * (dist/2.5);
             
             node.style.left = x + "%";
             node.style.top = y + "%";
@@ -138,120 +131,119 @@
             area.appendChild(node);
         }
 
-        async function masterProtocol() {
-            const val = document.getElementById('targetInput').value.trim();
-            if(!val) return;
-
-            // Очистка графа
-            const oldNodes = document.querySelectorAll('.node');
-            oldNodes.forEach(n => n.remove());
-
-            const btn = document.getElementById('startBtn');
-            btn.disabled = true;
-            btn.classList.add('opacity-50');
-
-            const type = detectType(val);
-            log(`INITIATING PROTOCOL: ${val}`, "#fff");
-            log(`TYPE DETECTED: ${type}`, var(--gold));
-            
-            document.getElementById('target-node').innerText = val;
-            document.getElementById('target-node').classList.add('glitch');
-
-            const steps = [
-                {msg: "BYPASSING FIREWALLS...", node: "GATEWAY"},
-                {msg: "ENCRYPTING SESSION...", node: "AES_256"},
-                {msg: "ENUMERATING SOCIAL VECTORS...", node: "SOCIAL_NET"},
-                {msg: "QUERYING GLOBAL LEAK DATABASES...", node: "DEHASHED"},
-                {msg: "SCRAPING ARCHIVED INFRASTRUCTURE...", node: "WAYBACK"},
-                {msg: "MAPPING NEURAL RELATIONS...", node: "REL_MAP"}
-            ];
-
-            for(let step of steps) {
-                log(step.msg);
-                addNode(step.node);
-                await new Promise(r => setTimeout(r, 450));
-            }
-
-            document.getElementById('vectorList').innerHTML = "";
-            document.getElementById('intelList').innerHTML = "";
-
-            // Наполнение (Ваши ссылки)
-            const vList = ['WhatsMyName', 'Epieos', 'Sherlock', 'Social-Searcher'];
-            const iList = ['Shodan', 'IntelX', 'Censys', 'LeakIX', 'Wayback'];
-
-            vList.forEach(v => createLink('vectorList', v, `https://google.com/search?q=${v}+${val}`));
-            iList.forEach(i => createLink('intelList', i, `https://google.com/search?q=${i}+${val}`));
-
-            document.getElementById('risk-lvl').innerText = "HIGH";
-            document.getElementById('risk-lvl').classList.replace('text-green-500', 'text-red-600');
-            
-            log("PROTOCOL FINISHED. TARGET COMPROMISED.", "#ff003c");
-            document.getElementById('target-node').classList.remove('glitch');
-            btn.disabled = false;
-            btn.classList.remove('opacity-50');
+        function detectType(input) {
+            if(input.includes("@")) return "EMAIL";
+            if(/^\d+\.\d+\.\d+\.\d+$/.test(input)) return "IPV4";
+            if(input.includes(".")) return "HOST/DOMAIN";
+            return "NICKNAME";
         }
 
         function createLink(containerId, title, url) {
             const container = document.getElementById(containerId);
+            if(container.innerText.includes("active")) container.innerHTML = "";
             const div = document.createElement('div');
-            div.className = "flex justify-between items-center p-2 bg-zinc-900/50 border border-zinc-800 rounded text-[10px] hover:border-gold transition mb-1 cursor-pointer";
-            div.innerHTML = `<span>${title}</span> <i class="fas fa-external-link-alt text-[8px] text-gold"></i>`;
+            div.className = "flex justify-between items-center p-2 bg-white/5 border border-gray-900 rounded hover:border-gold/50 cursor-pointer mb-2 transition";
+            div.innerHTML = `<span class="text-[10px]">${title}</span> <i class="fas fa-external-link-alt text-[8px] text-gold/60"></i>`;
             div.onclick = () => window.open(url, '_blank');
             container.appendChild(div);
         }
 
+        async function masterProtocol() {
+            const val = document.getElementById('targetInput').value.trim();
+            if(!val) return alert("Введите цель!");
+
+            // Сброс интерфейса
+            document.querySelectorAll('.node').forEach(n => n.remove());
+            document.getElementById('vectorList').innerHTML = "";
+            const startBtn = document.getElementById('startBtn');
+            startBtn.disabled = true;
+
+            const type = detectType(val);
+            log(`Инициация протокола для: ${val}`, "#fff");
+            log(`Тип цели определен: ${type}`, "#d4af37");
+
+            document.getElementById('target-node').innerText = val;
+            document.getElementById('target-node').classList.add('scanning-active');
+
+            const steps = [
+                {m: "Синхронизация с серверами разведки...", n: "Sync"},
+                {m: "Поиск цифрового следа в соцсетях...", n: "Socials"},
+                {m: "Проверка реестров утечек...", n: "Leaks"},
+                {m: "Анализ сетевых узлов...", n: "Infrastructure"},
+                {m: "Сборка корреляционной карты...", n: "Master_Map"}
+            ];
+
+            for(let step of steps) {
+                log(step.m);
+                addNode(step.n);
+                await new Promise(r => setTimeout(r, 600));
+            }
+
+            // Наполнение ссылками (тестовые векторы)
+            createLink('vectorList', "Epieos Profile Search", `https://epieos.com/?q=${val}`);
+            createLink('vectorList', "WhatsMyName Enumerator", `https://whatsmyname.app/?q=${val}`);
+            createLink('vectorList', "IntelX Data Search", `https://intelx.io/?s=${val}`);
+            createLink('vectorList', "Shodan Intelligence", `https://www.shodan.io/search?query=${val}`);
+
+            log("АНАЛИЗ ЗАВЕРШЕН. ВЕКТОРЫ СФОРМИРОВАНЫ.", "#00ff41");
+            document.getElementById('target-node').classList.remove('scanning-active');
+            startBtn.disabled = false;
+        }
+
         function handleMetadata(file) {
             if(!file) return;
-            log(`ANALYZING FILE: ${file.name}`, "#d4af37");
             const res = document.getElementById('metaResult');
             res.innerHTML = "EXTRACTING EXIF...";
-            
-            EXIF.getData(file, function() {
-                const make = EXIF.getTag(this, "Make") || "UNKNOWN";
-                const model = EXIF.getTag(this, "Model") || "UNKNOWN";
-                const date = EXIF.getTag(this, "DateTime") || "NOT_FOUND";
-                res.innerHTML = `DEVICE: ${make}/${model} | TIMESTAMP: ${date}`;
-                log(`METADATA CAPTURED: ${make} ${model}`, "#neon");
-            });
+            log(`Загружен файл: ${file.name}`, "#d4af37");
+
+            if(file.type.match('image.*')) {
+                EXIF.getData(file, function() {
+                    const make = EXIF.getTag(this, "Make") || "N/A";
+                    const model = EXIF.getTag(this, "Model") || "N/A";
+                    const date = EXIF.getTag(this, "DateTime") || "N/A";
+                    res.innerHTML = `DEVICE: ${make} ${model}<br>DATE: ${date}`;
+                    log(`Метаданные извлечены: ${make} ${model}`, "#neon");
+                });
+            } else {
+                res.innerHTML = `FILE: ${file.name}<br>SIZE: ${(file.size/1024).toFixed(1)} KB`;
+            }
         }
 
         function quickDork(type) {
             const val = document.getElementById('targetInput').value;
-            if(!val) return;
-            log(`DORK EXECUTED: ${type.toUpperCase()}`, "#d4af37");
-            window.open(`https://www.google.com/search?q=${val}+filetype:pdf`, '_blank');
+            if(!val) return alert("Введите цель!");
+            let q = `site:*.* "${val}" filetype:pdf`;
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
         }
 
         function generateReport() {
             const val = document.getElementById('targetInput').value || "UNKNOWN";
-            const report = `
-=========================================
-       INFEX OSINT PRO FINAL REPORT      
-=========================================
-TARGET ID: ${val}
-DETECTION: ${detectType(val)}
-RISK LVL: HIGH
-SESSION: ${document.getElementById('session-id').innerText}
-TIMESTAMP: ${new Date().toISOString()}
-
-ANALYSIS SUMMARY:
-- Behavioral nodes mapped to graph
-- Public and private vectors identified
-- Metadata extraction protocol complete
-
-VERDICT: TARGET VULNERABLE
-=========================================
-Generated by INFEX Advanced Framework.
+            const content = `
+=== INFEX OSINT FINAL REPORT ===
+Target: ${val}
+Type: ${detectType(val)}
+Timestamp: ${new Date().toISOString()}
+Risk Level: HIGH
+--------------------------------
+Summary: Digital footprint located.
+Vectors identified: 4 active nodes.
+--------------------------------
+Generated by INFEX PRO v4.5
             `;
-            const blob = new Blob([report], {type: 'text/plain'});
+            const blob = new Blob([content], {type: 'text/plain'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `INFEX_PRO_REPORT_${val}.txt`;
+            a.download = `INFEX_REPORT_${val}.txt`;
             a.click();
-            log("REPORT DOWNLOADED.", "#fff");
+            log("ОТЧЕТ СКАЧАН.", "#fff");
         }
 
-        log("SYSTEM ONLINE. STANDING BY FOR MASTER COMMAND.");
+        // Drag & Drop
+        const dz = document.getElementById('drop-zone');
+        dz.ondragover = (e) => { e.preventDefault(); dz.style.borderColor = "#d4af37"; };
+        dz.ondragleave = () => { dz.style.borderColor = "#222"; };
+        dz.ondrop = (e) => { e.preventDefault(); handleMetadata(e.dataTransfer.files[0]); };
+
     </script>
 </body>
 </html>
