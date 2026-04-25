@@ -2,103 +2,211 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>INFEX OSINT | GLOBAL ELITE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INFEX OSINT | GLOBAL ELITE SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --gold: #d4af37; --dark: #050505; }
-        body { background: var(--dark); color: #eee; font-family: 'Courier New', monospace; }
-        .gold-border { border: 1px solid var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.1); }
-        .btn-gold { background: var(--gold); color: black; font-weight: bold; transition: 0.3s; }
-        .btn-gold:hover { background: #fff; box-shadow: 0 0 20px var(--gold); }
-        .card { background: rgba(15,15,15,0.9); border-radius: 8px; padding: 1.5rem; }
-        .terminal-text { color: #00ff41; text-shadow: 0 0 5px #00ff41; }
-        input { border-bottom: 2px solid var(--gold) !important; background: transparent !important; outline: none; color: var(--gold); }
+        :root { --gold: #d4af37; --dark: #050505; --accent: #ffd700; }
+        
+        body { 
+            background: var(--dark); 
+            color: #eee; 
+            font-family: 'Courier New', monospace; 
+            background-image: radial-gradient(circle at center, #111 0%, #050505 100%);
+            min-height: 100vh;
+        }
+
+        .gold-border { 
+            border: 1px solid var(--gold); 
+            box-shadow: 0 0 25px rgba(212,175,55,0.15); 
+        }
+
+        .gold-text { color: var(--gold); text-shadow: 0 0 10px rgba(212,175,55,0.5); }
+
+        .btn-gold { 
+            background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728);
+            color: black; 
+            font-weight: 900; 
+            transition: 0.4s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-gold:hover { 
+            transform: scale(1.02);
+            box-shadow: 0 0 30px var(--gold);
+            filter: brightness(1.2);
+        }
+
+        .card { 
+            background: rgba(10, 10, 10, 0.9); 
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 4px; 
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: var(--gold);
+            animation: scan-line 4s linear infinite;
+        }
+
+        @keyframes scan-line {
+            0% { top: -100%; } 100% { top: 200%; }
+        }
+
+        .terminal-text { color: #00ff41; font-size: 0.75rem; line-height: 1.2; }
+        
+        input { 
+            border-bottom: 2px solid var(--gold) !important; 
+            background: rgba(255,255,255,0.05) !important; 
+            outline: none; 
+            color: var(--gold); 
+            transition: 0.3s;
+        }
+        
+        input:focus { background: rgba(212,175,55,0.1) !important; }
+
+        .loading-bar {
+            height: 2px;
+            background: var(--gold);
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); }
     </style>
 </head>
-<body class="p-5">
+<body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-10 p-8 gold-border rounded-xl">
-            <h1 class="text-6xl font-black tracking-tighter" style="color: var(--gold)">INFEX.HTML</h1>
-            <p class="text-gray-500 mt-2 uppercase tracking-[10px]">Unfiltered Intelligence Gathering</p>
+        <div class="relative text-center mb-10 p-10 gold-border rounded-lg bg-black overflow-hidden">
+            <div class="absolute inset-0 opacity-10 pointer-events-none" id="matrix"></div>
+            <h1 class="text-5xl md:text-7xl font-black tracking-tighter gold-text mb-2">INFEX SYSTEM</h1>
+            <p class="text-gray-500 uppercase tracking-[12px] text-xs">Advanced Intelligence Hub v2.5</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <input type="text" id="mainInput" placeholder="NICKNAME / EMAIL / DOMAIN / IP" class="md:col-span-3 p-4 text-2xl">
-            <button onclick="masterSearch()" class="btn-gold p-4 uppercase">Запустить протокол</button>
+            <input type="text" id="mainInput" placeholder="NICKNAME / EMAIL / DOMAIN / IP / PHONE" 
+                   class="md:col-span-3 p-5 text-2xl font-bold rounded-t-md">
+            <button onclick="runProtocol()" class="btn-gold p-5 uppercase text-xl rounded-md">Инициация</button>
         </div>
+
+        <div id="loader" class="loading-bar mb-8"></div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="card gold-border">
-                <h2 class="text-xl mb-4 text-yellow-500"><i class="fas fa-user-secret mr-2"></i> SOCIAL ENUMERATION</h2>
-                <div id="socialBox" class="space-y-2 text-sm"></div>
+            <div class="card">
+                <h2 class="text-xl mb-4 gold-text"><i class="fas fa-fingerprint mr-2"></i> ИДЕНТИФИКАЦИЯ</h2>
+                <div id="socialBox" class="space-y-3">
+                    <p class="text-gray-600 italic">Ожидание ввода данных...</p>
+                </div>
             </div>
 
-            <div class="card gold-border">
-                <h2 class="text-xl mb-4 text-yellow-500"><i class="fas fa-network-wired mr-2"></i> INFRASTRUCTURE</h2>
-                <div id="infraBox" class="space-y-2 text-sm"></div>
+            <div class="card">
+                <h2 class="text-xl mb-4 gold-text"><i class="fas fa-microchip mr-2"></i> ТЕХ. РАЗВЕДКА</h2>
+                <div id="infraBox" class="space-y-3">
+                    <p class="text-gray-600 italic">Сканер готов...</p>
+                </div>
             </div>
 
-            <div class="card gold-border">
-                <h2 class="text-xl mb-4 text-yellow-500"><i class="fas fa-database mr-2"></i> LEAKS & DORKS</h2>
-                <div id="leakBox" class="space-y-2 text-sm"></div>
+            <div class="card">
+                <h2 class="text-xl mb-4 gold-text"><i class="fas fa-user-secret mr-2"></i> УТЕЧКИ И ДОРКИ</h2>
+                <div id="leakBox" class="space-y-3">
+                    <p class="text-gray-600 italic">Базы деактивированы...</p>
+                </div>
             </div>
         </div>
 
-        <div class="mt-8 p-4 bg-black border border-gray-800 rounded h-40 overflow-y-auto font-mono text-xs" id="console">
-            <div class="terminal-text">> SYSTEM ONLINE. WAITING FOR MASTER...</div>
+        <div class="mt-8 p-5 bg-black border border-gray-800 rounded-lg shadow-2xl h-56 overflow-y-auto font-mono" id="console">
+            <div class="terminal-text">> [SYSTEM] INFEX OSINT BOOTED SUCCESSFULLY.</div>
+            <div class="terminal-text">> [AUTH] WELCOME, MASTER.</div>
+            <div class="terminal-text">> [READY] STANDING BY...</div>
         </div>
     </div>
 
     <script>
-        function log(msg) {
-            const c = document.getElementById('console');
-            c.innerHTML += `<div><span class="text-gray-600">[${new Date().toLocaleTimeString()}]</span> <span class="terminal-text">${msg}</span></div>`;
-            c.scrollTop = c.scrollHeight;
+        const terminal = document.getElementById('console');
+        
+        function log(msg, type = "info") {
+            const time = new Date().toLocaleTimeString();
+            const color = type === "warn" ? "text-yellow-500" : (type === "error" ? "text-red-500" : "text-green-500");
+            terminal.innerHTML += `<div><span class="text-gray-600">[${time}]</span> <span class="${color}">${msg}</span></div>`;
+            terminal.scrollTop = terminal.scrollHeight;
         }
 
-        function createAction(parent, title, url) {
+        function createLink(containerId, title, url) {
+            const container = document.getElementById(containerId);
             const div = document.createElement('div');
-            div.className = "flex justify-between items-center border-b border-gray-800 pb-2 hover:bg-gray-900 p-1 transition cursor-pointer";
-            div.innerHTML = `<span>${title}</span> <i class="fas fa-external-link-alt text-xs text-yellow-700"></i>`;
+            div.className = "flex justify-between items-center p-2 bg-white/5 hover:bg-white/10 rounded cursor-pointer transition border-l-2 border-transparent hover:border-gold-500";
+            div.innerHTML = `<span class="text-sm">${title}</span> <i class="fas fa-external-link-alt text-[10px] text-yellow-600"></i>`;
             div.onclick = () => window.open(url, '_blank');
-            parent.appendChild(div);
+            container.appendChild(div);
         }
 
-        function masterSearch() {
+        async function runProtocol() {
             const val = document.getElementById('mainInput').value.trim();
             if(!val) return;
 
-            log(`Инициация глобального поиска для: ${val}`);
-            
+            // Сброс интерфейса
+            document.getElementById('loader').style.width = "0%";
             const boxes = ['socialBox', 'infraBox', 'leakBox'];
-            boxes.forEach(id => document.getElementById(id).innerHTML = "");
+            boxes.forEach(id => document.getElementById(id).innerHTML = `<div class="text-yellow-500 animate-pulse text-xs">АНАЛИЗ ВЕКТОРОВ...</div>`);
 
-            // --- SOCIAL MODULE ---
-            const sBox = document.getElementById('socialBox');
-            createAction(sBox, "WhatsMyName (User Search)", `https://whatsmyname.app/?q=${val}`);
-            createAction(sBox, "Sherlock Search (GitHub)", `https://github.com/search?q=${val}&type=users`);
-            createAction(sBox, "Instant Checkmate", `https://www.instantcheckmate.com/search?q=${val}`);
-            createAction(sBox, "Social-Searcher", `https://www.social-searcher.com/search-users/?q=${val}`);
+            log(`Запуск протокола для: ${val}`, "warn");
+            
+            // Имитация загрузки
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 25;
+                document.getElementById('loader').style.width = progress + "%";
+                if(progress >= 100) clearInterval(interval);
+            }, 300);
 
-            // --- INFRA MODULE ---
-            const iBox = document.getElementById('infraBox');
-            createAction(iBox, "DNSDumpster", `https://dnsdumpster.com/`);
-            createAction(iBox, "Shodan (IP/Host)", `https://www.shodan.io/search?query=${val}`);
-            createAction(iBox, "Censys Search", `https://search.censys.io/search?resource=hosts&q=${val}`);
-            createAction(iBox, "IP-API (Geo JSON)", `https://ipapi.co/${val}/json/`);
-            createAction(iBox, "VirusTotal Analysis", `https://www.virustotal.com/gui/search/${val}`);
+            setTimeout(() => {
+                boxes.forEach(id => document.getElementById(id).innerHTML = "");
+                
+                // --- МОДУЛЬ 1: ИДЕНТИФИКАЦИЯ ---
+                createLink('socialBox', "EPIEOS (Поиск по Email)", `https://epieos.com/?q=${val}`);
+                createLink('socialBox', "WhatsMyName (Никнейм)", `https://whatsmyname.app/?q=${val}`);
+                createLink('socialBox', "Social-Searcher", `https://www.social-searcher.com/search-users/?q=${val}`);
+                
+                // Если похоже на телефон
+                if(/^[0-9+]+$/.test(val) && val.length > 5) {
+                    createLink('socialBox', "TG Lookup", `tg://resolve?phone=${val}`);
+                    createLink('socialBox', "TrueCaller Web", `https://www.truecaller.com/search/ru/${val}`);
+                }
 
-            // --- LEAK & DORKS MODULE ---
-            const lBox = document.getElementById('leakBox');
-            createAction(lBox, "IntelX (Leak Search)", `https://intelx.io/?s=${val}`);
-            createAction(lBox, "Google Dork: Files", `https://www.google.com/search?q=site:*.* filetype:pdf OR filetype:doc "${val}"`);
-            createAction(lBox, "Google Dork: Configs", `https://www.google.com/search?q=site:*.* "${val}" ext:env OR ext:conf`);
-            createAction(lBox, "Wayback Machine", `https://web.archive.org/web/*/${val}`);
-            createAction(lBox, "LeakIX", `https://leakix.net/search?q=${val}`);
+                // --- МОДУЛЬ 2: ТЕХ. РАЗВЕДКА ---
+                createLink('infraBox', "Shodan Intelligence", `https://www.shodan.io/search?query=${val}`);
+                createLink('infraBox', "Censys Hosts", `https://search.censys.io/search?resource=hosts&q=${val}`);
+                createLink('infraBox', "DNSDumpster", `https://dnsdumpster.com/`);
+                createLink('infraBox', "IP-API Geo", `https://ipapi.co/${val}/json/`);
 
-            log("Протокол выполнен. Все модули подгрузили внешние триггеры.");
+                // --- МОДУЛЬ 3: УТЕЧКИ ---
+                createLink('leakBox', "IntelX Search", `https://intelx.io/?s=${val}`);
+                createLink('leakBox', "Google Dork: Private Files", `https://www.google.com/search?q=site:*.* filetype:pdf OR filetype:xlsx "${val}"`);
+                createLink('leakBox', "Google Dork: Env/Log", `https://www.google.com/search?q=site:*.* "${val}" ext:env OR ext:log OR ext:sql`);
+                createLink('leakBox', "LeakIX Analysis", `https://leakix.net/search?q=${val}`);
+                createLink('leakBox', "Wayback Machine", `https://web.archive.org/web/*/${val}`);
+
+                log("Протокол завершен успешно. Отчет сформирован.", "info");
+            }, 1200);
+        }
+
+        // Эффект матрицы для красоты
+        const matrixEl = document.getElementById('matrix');
+        for(let i=0; i<50; i++) {
+            const span = document.createElement('span');
+            span.style.left = Math.random() * 100 + '%';
+            span.style.animationDelay = Math.random() * 5 + 's';
+            span.innerText = '10';
+            matrixEl.appendChild(span);
         }
     </script>
 </body>
