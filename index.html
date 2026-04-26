@@ -3,95 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFEX OSINT | CYBER VOICE 6.0</title>
+    <title>INFEX OSINT | VOICE & GPRS FINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --gold: #d4af37; --dark: #050505; --neon: #00ff41; --danger: #ff0000; }
+        :root { --gold: #d4af37; --dark: #050505; --neon: #00ff41; --danger: #ff3e3e; }
         body { background: var(--dark); color: #eee; font-family: 'Courier New', monospace; overflow-x: hidden; }
         .gold-border { border: 1px solid var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.2); }
         .gold-text { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
-        .card { background: rgba(5,5,5,0.98); border: 1px solid rgba(212,175,55,0.3); border-radius: 2px; }
+        .card { background: rgba(10,10,10,0.95); border: 1px solid rgba(212,175,55,0.3); border-radius: 4px; overflow: hidden; }
         
-        .btn-execute { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728); color: black; font-weight: 900; transition: 0.3s; cursor: pointer; border: none; text-transform: uppercase; }
-        .btn-execute:hover { transform: scale(1.02); box-shadow: 0 0 40px var(--gold); filter: brightness(1.1); }
+        .btn-execute { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728); color: black; font-weight: 900; transition: 0.4s; cursor: pointer; border: none; }
+        .btn-execute:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--gold); }
 
-        #graph-area { background: #000; position: relative; overflow: hidden; }
-        .neural-node { position: absolute; width: 2px; height: 2px; background: var(--gold); border-radius: 50%; opacity: 0.2; animation: move 15s infinite linear; }
-        @keyframes move { 
-            0% { transform: translate(0, 0); } 
-            100% { transform: translate(var(--mx), var(--my)); } 
+        #graph-area { background: radial-gradient(circle, #111 0%, #000 100%); position: relative; }
+        .neural-node { position: absolute; width: 4px; height: 4px; background: var(--gold); border-radius: 50%; opacity: 0.3; animation: float 10s infinite linear; }
+        @keyframes float {
+            0% { transform: translate(0, 0); opacity: 0.3; }
+            50% { opacity: 0.8; }
+            100% { transform: translate(var(--tw-x), var(--tw-y)); opacity: 0.3; }
         }
 
-        .terminal { background: #000; border: 1px solid #111; height: 180px; overflow-y: auto; font-size: 11px; padding: 15px; color: var(--neon); border-left: 2px solid var(--gold); }
-        input { background: #000 !important; border: 1px solid #222 !important; color: var(--gold) !important; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--gold) !important; box-shadow: 0 0 10px rgba(212,175,55,0.1); }
+        .terminal { background: #000; border: 1px solid #1a1a1a; height: 180px; overflow-y: auto; font-size: 11px; padding: 15px; color: var(--neon); border-left: 3px solid var(--gold); }
+        input { background: #000 !important; border: 1px solid #333 !important; color: var(--gold) !important; outline: none; }
 
-        .glitch-active { animation: glitch 0.2s infinite; }
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        #drop-zone { border: 1px dashed #333; transition: 0.3s; cursor: pointer; background: rgba(255,255,255,0.02); }
+        #drop-zone { border: 2px dashed #222; transition: 0.3s; cursor: pointer; }
         #drop-zone:hover { border-color: var(--gold); background: rgba(212,175,55,0.05); }
+
+        .gps-badge { background: var(--danger); color: white; padding: 2px 8px; border-radius: 2px; font-size: 9px; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
-        <header class="text-center mb-8 p-6 gold-border rounded bg-black" id="main-header">
-            <h1 class="text-6xl font-black gold-text tracking-tighter italic">INFEX PRO</h1>
-            <p class="text-gray-600 uppercase tracking-[12px] text-[10px]">Cybernetic Intelligence OS v6.0</p>
+        <header class="text-center mb-6 p-6 gold-border rounded bg-black">
+            <h1 class="text-5xl font-black gold-text tracking-tighter italic">INFEX OSINT v5.8</h1>
+            <p class="text-gray-600 uppercase tracking-[15px] text-[9px]">Voice Synthesizer & Forensic GPRS</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
             <div class="lg:col-span-3 card p-6">
-                <input type="text" id="targetInput" class="w-full p-4 text-2xl font-bold rounded" placeholder="SYSTEM_TARGET_ID_">
+                <input type="text" id="targetInput" class="w-full p-4 text-2xl font-bold rounded" placeholder="ENTER TARGET ID">
                 <div class="flex gap-2 mt-4">
-                    <button onclick="quickDork('leak')" class="flex-grow text-[10px] border border-zinc-800 text-zinc-500 p-2 uppercase hover:border-gold hover:text-gold transition italic">Leak_DB</button>
-                    <button onclick="quickDork('social')" class="flex-grow text-[10px] border border-zinc-800 text-zinc-500 p-2 uppercase hover:border-gold hover:text-gold transition italic">Social_Probe</button>
+                    <button onclick="quickDork('leak')" class="flex-grow text-[9px] border border-red-900 text-red-500 p-2 uppercase hover:bg-red-500 transition">Leak Search</button>
+                    <button onclick="quickDork('social')" class="flex-grow text-[9px] border border-blue-900 text-blue-500 p-2 uppercase hover:bg-blue-500 transition">Social Search</button>
                 </div>
             </div>
             <button onclick="masterProtocol()" id="startBtn" class="btn-execute rounded p-6 flex flex-col items-center justify-center">
-                <i class="fas fa-terminal text-2xl mb-1"></i>
-                <span class="text-xl">Execute</span>
+                <i class="fas fa-volume-up text-2xl mb-1"></i>
+                <span class="text-xl uppercase">Initiate</span>
             </button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
             <div class="lg:col-span-5 card p-4 h-[400px] flex flex-col">
-                <h3 class="gold-text text-xs mb-4 uppercase font-bold italic">Neural_Map_Static</h3>
-                <div id="graph-area" class="flex-grow rounded border border-zinc-900">
-                    <div id="target-label" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 gold-text font-bold text-center text-[10px] uppercase tracking-[5px] bg-black/90 p-4 border border-gold/20 shadow-2xl">Core_Standby</div>
+                <h3 class="gold-text text-xs mb-4 uppercase font-bold italic"><i class="fas fa-brain mr-2"></i> Neural Map</h3>
+                <div id="graph-area" class="flex-grow rounded border border-zinc-900 overflow-hidden">
+                    <div id="target-label" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 gold-text font-bold text-center text-xs uppercase tracking-widest bg-black/80 px-4 py-2 border border-gold/30">System Ready</div>
                 </div>
             </div>
 
-            <div class="lg:col-span-7 card p-5 flex flex-col h-[400px]">
-                <h3 class="gold-text text-xs mb-4 uppercase font-bold border-b border-gold/10 pb-2 flex justify-between italic">
-                    <span>GPRS_Forensic_Extraction</span>
-                    <span id="gps-status" class="hidden text-red-600 animate-pulse text-[9px] font-black underline">POS_TRACKED</span>
+            <div class="lg:col-span-7 card p-5 flex flex-col">
+                <h3 class="gold-text text-xs mb-4 uppercase font-bold border-b border-gold/20 pb-2 flex justify-between italic">
+                    <span>Metadata & GPRS Intelligence</span>
+                    <span id="gps-status" class="hidden gps-badge">GPS DETECTED</span>
                 </h3>
-                <div id="drop-zone" class="p-8 rounded text-center mb-4" onclick="document.getElementById('fileInput').click()">
-                    <i class="fas fa-user-secret text-4xl mb-2 text-zinc-800"></i>
-                    <p class="text-[9px] text-zinc-600 uppercase tracking-widest">Inject_Source_File</p>
+                <div id="drop-zone" class="p-4 rounded text-center mb-4" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-fingerprint text-3xl mb-2 text-zinc-800"></i>
+                    <p class="text-[10px] text-zinc-500 uppercase">Load file for voice analysis</p>
                     <input type="file" id="fileInput" class="hidden" onchange="handleMetadata(this.files[0])">
                 </div>
-                <div id="metaResult" class="grid grid-cols-2 gap-2 font-mono bg-black p-4 border border-zinc-900 rounded overflow-y-auto text-[9px]">
-                    <p class="col-span-full text-center text-zinc-800 italic uppercase">Awaiting_Binary_Data...</p>
+                <div id="metaResult" class="grid grid-cols-2 gap-2 font-mono bg-black p-4 border border-zinc-900 rounded overflow-y-auto max-h-[180px] text-[10px]">
+                    <p class="col-span-full text-center text-zinc-700 italic">WAITING FOR INGESTION...</p>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="card p-4">
-                <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/10 pb-2">Target_Vectors</h3>
+                <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2">Vectors</h3>
                 <div id="vectorList" class="space-y-1"></div>
             </div>
             <div class="md:col-span-2">
@@ -102,40 +95,35 @@
 
     <script>
         const terminal = document.getElementById('terminal');
-        const header = document.getElementById('main-header');
+        const graph = document.getElementById('graph-area');
 
-        // ХАКЕРСКАЯ ОЗВУЧКА
-        function cyberSpeak(text) {
-            window.speechSynthesis.cancel();
+        // СИНТЕЗ ГОЛОСА
+        function speak(text) {
             const msg = new SpeechSynthesisUtterance();
             msg.text = text;
             msg.lang = 'ru-RU';
-            msg.rate = 0.85; // Медленно и серьезно
-            msg.pitch = 0.5; // Низкий бас
-            msg.volume = 1;
-
-            header.classList.add('glitch-active');
-            msg.onend = () => header.classList.remove('glitch-active');
+            msg.rate = 1.1;
+            msg.pitch = 0.8; // Более низкий, "хакерский" голос
             window.speechSynthesis.speak(msg);
         }
 
-        function initNodes() {
-            const area = document.getElementById('graph-area');
-            for(let i=0; i<50; i++) {
-                const n = document.createElement('div');
-                n.className = 'neural-node';
-                n.style.left = Math.random() * 100 + '%';
-                n.style.top = Math.random() * 100 + '%';
-                n.style.setProperty('--mx', (Math.random() * 400 - 200) + 'px');
-                n.style.setProperty('--my', (Math.random() * 400 - 200) + 'px');
-                area.appendChild(n);
+        function initNeuralMap() {
+            for(let i=0; i<40; i++) {
+                const node = document.createElement('div');
+                node.className = 'neural-node';
+                node.style.left = Math.random() * 100 + '%';
+                node.style.top = Math.random() * 100 + '%';
+                node.style.setProperty('--tw-x', (Math.random() * 200 - 100) + 'px');
+                node.style.setProperty('--tw-y', (Math.random() * 200 - 100) + 'px');
+                node.style.animationDuration = (5 + Math.random() * 10) + 's';
+                graph.appendChild(node);
             }
         }
-        initNodes();
+        initNeuralMap();
 
         function log(msg, color = "#00ff41") {
             const div = document.createElement('div');
-            div.innerHTML = `<span style="color: #222">[SYS]</span> <span style="color: ${color}">${msg}</span>`;
+            div.innerHTML = `<span style="color: #444">[${new Date().toLocaleTimeString()}]</span> <span style="color: ${color}">> ${msg}</span>`;
             terminal.appendChild(div);
             terminal.scrollTop = terminal.scrollHeight;
         }
@@ -143,74 +131,86 @@
         async function masterProtocol() {
             const val = document.getElementById('targetInput').value.trim();
             if(!val) {
-                cyberSpeak("Объект не задан. Введите идентификатор, господин.");
+                speak("Мой господин, введите цель");
                 return;
             }
-            document.getElementById('target-label').innerText = "TRACKING: " + val;
+            document.getElementById('target-label').innerText = "PROBING: " + val;
             document.getElementById('vectorList').innerHTML = "";
             
-            cyberSpeak(`Инициирую взлом баз данных. Поиск объекта: ${val}.`);
-            log(`DECRYPTING_VECTORS: ${val}`, "#fff");
+            speak(`Инициирую протокол поиска для объекта ${val}. Подключаюсь к базам данных.`);
+            log(`Запуск глубокого сканирования: ${val}`, "#fff");
 
-            const v = ["Epieos_Intelligence", "WhatsMyName_Search", "IntelX_Leak_DB"];
-            for(let name of v) {
-                log(`Mining_${name}...`);
+            const services = [
+                { name: "Epieos Search", url: `https://epieos.com/?q=${val}` },
+                { name: "WhatsMyName", url: `https://whatsmyname.app/?q=${val}` },
+                { name: "IntelX Archive", url: `https://intelx.io/?s=${val}` }
+            ];
+
+            for(let s of services) {
+                log(`Запрос к ${s.name}...`);
                 await new Promise(r => setTimeout(r, 600));
-                const div = document.createElement('div');
-                div.className = "p-2 bg-white/5 border border-zinc-900 rounded text-[9px] mb-1 cursor-pointer hover:border-gold";
-                div.innerHTML = `${name} <i class="fas fa-external-link-alt float-right"></i>`;
-                div.onclick = () => window.open(`https://google.com/search?q=${name}+${val}`);
-                document.getElementById('vectorList').appendChild(div);
+                const a = document.createElement('div');
+                a.className = "p-2 bg-white/5 border border-zinc-800 rounded text-[10px] mb-1 cursor-pointer hover:border-gold transition";
+                a.innerHTML = `${s.name} <i class="fas fa-external-link-alt float-right"></i>`;
+                a.onclick = () => window.open(s.url, '_blank');
+                document.getElementById('vectorList').appendChild(a);
             }
-            cyberSpeak("Доступ получен. Все векторы активны.");
+            
+            speak("Анализ завершен. Все разведывательные каналы открыты.");
+            log("ПРОТОКОЛ ЗАВЕРШЕН.", "#00ff41");
         }
 
         function handleMetadata(file) {
             if(!file) return;
             const res = document.getElementById('metaResult');
-            const badge = document.getElementById('gps-status');
-            res.innerHTML = "";
+            const gpsBadge = document.getElementById('gps-status');
+            res.innerHTML = "<p class='col-span-full text-gold text-center italic'>DECODING...</p>";
             
-            cyberSpeak("Файл принят. Начинаю глубокое сканирование слоев.");
-            log(`ANALYZING_BINARY: ${file.name}`);
+            speak(`Файл ${file.name} принят. Начинаю бинарный анализ.`);
+            log(`Анализ структуры: ${file.name}`);
 
             EXIF.getData(file, function() {
                 const tags = EXIF.getAllTags(this);
+                res.innerHTML = "";
                 
-                if (tags.GPSLatitude) {
-                    badge.classList.remove('hidden');
-                    cyberSpeak("Внимание. Обнаружен сигнал координат. Местоположение цели раскрыто.");
+                const baseData = { "File": file.name, "Size": (file.size/1024).toFixed(1) + " KB" };
+                for(let [k,v] of Object.entries(baseData)) {
+                    res.innerHTML += `<div class='border-b border-zinc-900 p-1'><p class='text-zinc-600 text-[8px]'>${k}</p><p class='text-white'>${v}</p></div>`;
+                }
+
+                if (tags.GPSLatitude && tags.GPSLongitude) {
+                    gpsBadge.classList.remove('hidden');
                     const lat = tags.GPSLatitude[0] + tags.GPSLatitude[1]/60 + tags.GPSLatitude[2]/3600;
                     const lon = tags.GPSLongitude[0] + tags.GPSLongitude[1]/60 + tags.GPSLongitude[2]/3600;
-                    res.innerHTML += `<div class='col-span-full border border-red-900 bg-red-900/10 p-2 text-center'>
-                        <p class='text-red-600 font-bold text-[10px]'>GPRS_COORDS_LOCKED</p>
-                        <button onclick="window.open('https://maps.google.com?q=${lat},${lon}')" class='bg-red-600 text-black px-2 py-1 mt-2 font-bold'>VIEW_ON_SATELLITE</button>
+                    
+                    speak("Внимание! Обнаружены координаты системы G P R S. Местоположение зафиксировано.");
+                    
+                    res.innerHTML += `<div class='col-span-full mt-2 bg-red-900/20 border border-red-600 p-2 text-center'>
+                        <p class='text-red-500 font-bold mb-1'>GPRS SIGNAL FOUND</p>
+                        <button onclick="window.open('https://www.google.com/maps?q=${lat},${lon}', '_blank')" class='bg-red-600 text-white px-4 py-1 rounded text-[10px] font-bold'>MAP VIEW</button>
                     </div>`;
                 }
 
-                const info = { "Device": tags.Model, "Software": tags.Software, "Created": tags.DateTime };
-                for(let [k,v] of Object.entries(info)) {
-                    if(v) res.innerHTML += `<div class='border-b border-zinc-900 p-1'><p class='text-zinc-600 text-[7px]'>${k}</p><p class='text-gold'>${v}</p></div>`;
-                }
-                
-                if(Object.keys(tags).length > 0) {
-                    cyberSpeak(`Скан завершен. Извлечено ${Object.keys(tags).length} параметров.`);
+                if(Object.keys(tags).length === 0) {
+                    speak("Метаданные отсутствуют. Переключаюсь на анализ системных атрибутов.");
                 } else {
-                    cyberSpeak("Метаданные очищены. Вывожу системные атрибуты.");
-                    res.innerHTML += `<div class='col-span-full text-zinc-600 text-center italic'>Binary_Headers_Stripped</div>`;
+                    speak(`Обнаружено ${Object.keys(tags).length} технических параметров. Устройство ${tags.Model || 'не определено'}.`);
                 }
+                log("Анализ завершен.");
             });
         }
 
-        function quickDork(t) {
+        function quickDork(type) {
             const val = document.getElementById('targetInput').value;
             if(!val) return;
-            cyberSpeak("Запускаю поисковый дорк.");
-            window.open(`https://www.google.com/search?q="${val}"+${t==='leak'?'leak':'social'}`);
+            speak("Выполняю поисковый запрос.");
+            const q = type === 'leak' ? `"${val}" password OR leak` : `site:instagram.com "${val}"`;
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
         }
 
+        // Приветствие при старте
         window.onload = () => {
-            setTimeout(() => cyberSpeak("Система Инфекс Про активна. Слушаю вас, мой господин."), 800);
+            setTimeout(() => speak("Система Инфекс О синт онлайн. Слушаю вас, мой господин."), 1000);
         };
     </script>
 </body>
