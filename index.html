@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFEX OSINT | VOICE & GPRS FINAL</title>
+    <title>INFEX OSINT | FINAL ELITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -34,27 +34,34 @@
 
         .gps-badge { background: var(--danger); color: white; padding: 2px 8px; border-radius: 2px; font-size: 9px; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        .glitch-voice { animation: glitch 0.2s infinite; }
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            50% { transform: translate(-2px, 1px); color: #fff; }
+            100% { transform: translate(0); }
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
-        <header class="text-center mb-6 p-6 gold-border rounded bg-black">
-            <h1 class="text-5xl font-black gold-text tracking-tighter italic">INFEX OSINT v5.8</h1>
-            <p class="text-gray-600 uppercase tracking-[15px] text-[9px]">Voice Synthesizer & Forensic GPRS</p>
+        <header class="text-center mb-6 p-6 gold-border rounded bg-black" id="header">
+            <h1 class="text-5xl font-black gold-text tracking-tighter italic">INFEX OSINT v6.0</h1>
+            <p class="text-gray-600 uppercase tracking-[15px] text-[9px]">Cyber-Voice Intelligence & GPRS</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
             <div class="lg:col-span-3 card p-6">
                 <input type="text" id="targetInput" class="w-full p-4 text-2xl font-bold rounded" placeholder="ENTER TARGET ID">
                 <div class="flex gap-2 mt-4">
-                    <button onclick="quickDork('leak')" class="flex-grow text-[9px] border border-red-900 text-red-500 p-2 uppercase hover:bg-red-500 transition">Leak Search</button>
-                    <button onclick="quickDork('social')" class="flex-grow text-[9px] border border-blue-900 text-blue-500 p-2 uppercase hover:bg-blue-500 transition">Social Search</button>
+                    <button onclick="quickDork('leak')" class="flex-grow text-[9px] border border-red-900 text-red-500 p-2 uppercase hover:bg-red-500 hover:text-white transition">Leak Search</button>
+                    <button onclick="quickDork('social')" class="flex-grow text-[9px] border border-blue-900 text-blue-500 p-2 uppercase hover:bg-blue-500 hover:text-white transition">Social Search</button>
                 </div>
             </div>
             <button onclick="masterProtocol()" id="startBtn" class="btn-execute rounded p-6 flex flex-col items-center justify-center">
-                <i class="fas fa-volume-up text-2xl mb-1"></i>
-                <span class="text-xl uppercase">Initiate</span>
+                <i class="fas fa-terminal text-2xl mb-1"></i>
+                <span class="text-xl uppercase tracking-widest">Execute</span>
             </button>
         </div>
 
@@ -73,37 +80,61 @@
                 </h3>
                 <div id="drop-zone" class="p-4 rounded text-center mb-4" onclick="document.getElementById('fileInput').click()">
                     <i class="fas fa-fingerprint text-3xl mb-2 text-zinc-800"></i>
-                    <p class="text-[10px] text-zinc-500 uppercase">Load file for voice analysis</p>
+                    <p class="text-[10px] text-zinc-500 uppercase italic">Ingest file for binary parsing</p>
                     <input type="file" id="fileInput" class="hidden" onchange="handleMetadata(this.files[0])">
                 </div>
                 <div id="metaResult" class="grid grid-cols-2 gap-2 font-mono bg-black p-4 border border-zinc-900 rounded overflow-y-auto max-h-[180px] text-[10px]">
-                    <p class="col-span-full text-center text-zinc-700 italic">WAITING FOR INGESTION...</p>
+                    <p class="col-span-full text-center text-zinc-700 italic">WAITING FOR DATA...</p>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <div class="card p-4">
-                <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2">Vectors</h3>
+                <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2">Intelligence Vectors</h3>
                 <div id="vectorList" class="space-y-1"></div>
             </div>
             <div class="md:col-span-2">
                 <div class="terminal" id="terminal"></div>
             </div>
         </div>
+
+        <footer class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-gold/20">
+            <div class="card p-4">
+                <h3 class="gold-text text-[10px] uppercase font-black mb-4 tracking-[3px]">СОЦИАЛЬНЫЕ</h3>
+                <div class="flex gap-4 text-2xl">
+                    <a href="#" class="text-zinc-600 hover:text-gold transition"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="text-zinc-600 hover:text-gold transition"><i class="fab fa-github"></i></a>
+                    <a href="#" class="text-zinc-600 hover:text-gold transition"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="text-zinc-600 hover:text-gold transition"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
+            <div class="card p-4">
+                <h3 class="gold-text text-[10px] uppercase font-black mb-2 tracking-[3px]">OSINT Бюллетень</h3>
+                <p class="text-[9px] text-zinc-500 mb-3 italic">Краткий информационный дайджест событий.</p>
+                <button class="w-full py-2 border border-gold/30 text-gold text-[10px] uppercase font-bold hover:bg-gold hover:text-black transition">Подписаться</button>
+            </div>
+            <div class="card p-4 flex flex-col justify-center items-center">
+                <p class="text-[10px] text-zinc-400 mb-2 font-bold uppercase italic text-center">Есть вопросы по протоколам?</p>
+                <button class="btn-execute px-6 py-3 rounded text-[11px] w-full" onclick="cyberSpeak('Перенаправляю в центр связи.')">Свяжитесь с нами сюда</button>
+            </div>
+        </footer>
     </div>
 
     <script>
         const terminal = document.getElementById('terminal');
         const graph = document.getElementById('graph-area');
+        const header = document.getElementById('header');
 
-        // СИНТЕЗ ГОЛОСА
-        function speak(text) {
+        function cyberSpeak(text) {
+            window.speechSynthesis.cancel();
             const msg = new SpeechSynthesisUtterance();
             msg.text = text;
             msg.lang = 'ru-RU';
-            msg.rate = 1.1;
-            msg.pitch = 0.8; // Более низкий, "хакерский" голос
+            msg.rate = 0.9;
+            msg.pitch = 0.5; // Хакерский бас
+            header.classList.add('glitch-voice');
+            msg.onend = () => header.classList.remove('glitch-voice');
             window.speechSynthesis.speak(msg);
         }
 
@@ -131,17 +162,17 @@
         async function masterProtocol() {
             const val = document.getElementById('targetInput').value.trim();
             if(!val) {
-                speak("Мой господин, введите цель");
+                cyberSpeak("Мой господин, введите цель для захвата.");
                 return;
             }
-            document.getElementById('target-label').innerText = "PROBING: " + val;
+            document.getElementById('target-label').innerText = "TRACKING: " + val;
             document.getElementById('vectorList').innerHTML = "";
             
-            speak(`Инициирую протокол поиска для объекта ${val}. Подключаюсь к базам данных.`);
-            log(`Запуск глубокого сканирования: ${val}`, "#fff");
+            cyberSpeak(`Инициирую взлом. Объект ${val} под прицелом.`);
+            log(`Запуск OSINT-протокола: ${val}`, "#fff");
 
             const services = [
-                { name: "Epieos Search", url: `https://epieos.com/?q=${val}` },
+                { name: "Epieos Intelligence", url: `https://epieos.com/?q=${val}` },
                 { name: "WhatsMyName", url: `https://whatsmyname.app/?q=${val}` },
                 { name: "IntelX Archive", url: `https://intelx.io/?s=${val}` }
             ];
@@ -156,7 +187,7 @@
                 document.getElementById('vectorList').appendChild(a);
             }
             
-            speak("Анализ завершен. Все разведывательные каналы открыты.");
+            cyberSpeak("Анализ завершен. Данные извлечены.");
             log("ПРОТОКОЛ ЗАВЕРШЕН.", "#00ff41");
         }
 
@@ -164,38 +195,32 @@
             if(!file) return;
             const res = document.getElementById('metaResult');
             const gpsBadge = document.getElementById('gps-status');
-            res.innerHTML = "<p class='col-span-full text-gold text-center italic'>DECODING...</p>";
+            res.innerHTML = "";
             
-            speak(`Файл ${file.name} принят. Начинаю бинарный анализ.`);
+            cyberSpeak(`Файл ${file.name} загружен в буфер. Начинаю дешифровку.`);
             log(`Анализ структуры: ${file.name}`);
 
             EXIF.getData(file, function() {
                 const tags = EXIF.getAllTags(this);
-                res.innerHTML = "";
                 
-                const baseData = { "File": file.name, "Size": (file.size/1024).toFixed(1) + " KB" };
-                for(let [k,v] of Object.entries(baseData)) {
-                    res.innerHTML += `<div class='border-b border-zinc-900 p-1'><p class='text-zinc-600 text-[8px]'>${k}</p><p class='text-white'>${v}</p></div>`;
-                }
-
                 if (tags.GPSLatitude && tags.GPSLongitude) {
                     gpsBadge.classList.remove('hidden');
                     const lat = tags.GPSLatitude[0] + tags.GPSLatitude[1]/60 + tags.GPSLatitude[2]/3600;
                     const lon = tags.GPSLongitude[0] + tags.GPSLongitude[1]/60 + tags.GPSLongitude[2]/3600;
-                    
-                    speak("Внимание! Обнаружены координаты системы G P R S. Местоположение зафиксировано.");
-                    
-                    res.innerHTML += `<div class='col-span-full mt-2 bg-red-900/20 border border-red-600 p-2 text-center'>
-                        <p class='text-red-500 font-bold mb-1'>GPRS SIGNAL FOUND</p>
-                        <button onclick="window.open('https://www.google.com/maps?q=${lat},${lon}', '_blank')" class='bg-red-600 text-white px-4 py-1 rounded text-[10px] font-bold'>MAP VIEW</button>
+                    cyberSpeak("Внимание. Обнаружены координаты G P R S. Цель локализована.");
+                    res.innerHTML += `<div class='col-span-full bg-red-900/20 border border-red-600 p-2 text-center mb-2'>
+                        <p class='text-red-500 font-bold text-[9px]'>GPRS SIGNAL LOCKED</p>
+                        <button onclick="window.open('https://www.google.com/maps?q=${lat},${lon}', '_blank')" class='bg-red-600 text-white px-4 py-1 mt-2 text-[9px] font-bold'>OPEN MAP</button>
                     </div>`;
                 }
 
-                if(Object.keys(tags).length === 0) {
-                    speak("Метаданные отсутствуют. Переключаюсь на анализ системных атрибутов.");
-                } else {
-                    speak(`Обнаружено ${Object.keys(tags).length} технических параметров. Устройство ${tags.Model || 'не определено'}.`);
+                const baseData = { "File": file.name, "Size": (file.size/1024).toFixed(1) + " KB", "Device": tags.Model || "N/A" };
+                for(let [k,v] of Object.entries(baseData)) {
+                    res.innerHTML += `<div class='border-b border-zinc-900 p-1'><p class='text-zinc-600 text-[8px]'>${k}</p><p class='text-white'>${v}</p></div>`;
                 }
+
+                if(Object.keys(tags).length > 0) cyberSpeak(`Извлечено ${Object.keys(tags).length} тех параметров.`);
+                else cyberSpeak("Метаданные очищены. Вывожу системные логи.");
                 log("Анализ завершен.");
             });
         }
@@ -203,14 +228,13 @@
         function quickDork(type) {
             const val = document.getElementById('targetInput').value;
             if(!val) return;
-            speak("Выполняю поисковый запрос.");
+            cyberSpeak("Выполняю поисковый запрос в теневом секторе.");
             const q = type === 'leak' ? `"${val}" password OR leak` : `site:instagram.com "${val}"`;
             window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
         }
 
-        // Приветствие при старте
         window.onload = () => {
-            setTimeout(() => speak("Система Инфекс О синт онлайн. Слушаю вас, мой господин."), 1000);
+            setTimeout(() => cyberSpeak("Система Инфекс Про активна. Слушаю вас, мой господин."), 1000);
         };
     </script>
 </body>
