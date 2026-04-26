@@ -3,73 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFEX OSINT PRO | DIRECT ACCESS EDITION</title>
+    <title>INFEX OSINT | NEURAL GPRS EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --gold: #d4af37; --dark: #050505; --neon: #00ff41; }
-        body { background: var(--dark); color: #eee; font-family: 'Courier New', monospace; background-image: radial-gradient(circle at center, #111 0%, #050505 100%); }
+        :root { --gold: #d4af37; --dark: #050505; --neon: #00ff41; --danger: #ff3e3e; }
+        body { background: var(--dark); color: #eee; font-family: 'Courier New', monospace; overflow-x: hidden; }
         .gold-border { border: 1px solid var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.2); }
         .gold-text { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
-        .card { background: rgba(10,10,10,0.95); border: 1px solid rgba(212,175,55,0.3); border-radius: 4px; position: relative; }
-        .btn-execute { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728); color: black; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; }
+        .card { background: rgba(10,10,10,0.95); border: 1px solid rgba(212,175,55,0.3); border-radius: 4px; overflow: hidden; }
+        
+        /* КНОПКА ЗАПУСКА */
+        .btn-execute { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728); color: black; font-weight: 900; transition: 0.4s; cursor: pointer; border: none; }
         .btn-execute:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--gold); }
-        .terminal { background: #000; border: 1px solid #1a1a1a; height: 200px; overflow-y: auto; font-size: 11px; padding: 15px; color: var(--neon); border-left: 3px solid var(--gold); }
+
+        /* ЖИВАЯ НЕЙРОСЕТЬ */
+        #graph-area { background: radial-gradient(circle, #111 0%, #000 100%); position: relative; }
+        .neural-node { position: absolute; width: 4px; height: 4px; background: var(--gold); border-radius: 50%; opacity: 0.3; animation: float 10s infinite linear; }
+        @keyframes float {
+            0% { transform: translate(0, 0); opacity: 0.3; }
+            50% { opacity: 0.8; }
+            100% { transform: translate(var(--tw-x), var(--tw-y)); opacity: 0.3; }
+        }
+
+        .terminal { background: #000; border: 1px solid #1a1a1a; height: 180px; overflow-y: auto; font-size: 11px; padding: 15px; color: var(--neon); border-left: 3px solid var(--gold); }
         input { background: #000 !important; border: 1px solid #333 !important; color: var(--gold) !important; outline: none; }
-        .node { position: absolute; font-size: 9px; color: var(--neon); background: rgba(0,255,65,0.1); padding: 3px 8px; border: 1px solid var(--neon); border-radius: 2px; z-index: 50; }
-        .vector-link { display: block; padding: 8px; margin-bottom: 5px; background: rgba(255,255,255,0.05); border: 1px solid #222; border-radius: 3px; font-size: 10px; transition: 0.2s; cursor: pointer; }
-        .vector-link:hover { border-color: var(--gold); background: rgba(212,175,55,0.1); color: var(--gold); }
+
+        #drop-zone { border: 2px dashed #222; transition: 0.3s; cursor: pointer; }
+        #drop-zone:hover { border-color: var(--gold); background: rgba(212,175,55,0.05); }
+
+        .gps-badge { background: var(--danger); color: white; padding: 2px 8px; border-radius: 2px; font-size: 9px; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
-        <header class="text-center mb-8 p-6 gold-border rounded bg-black">
-            <h1 class="text-6xl font-black gold-text tracking-tighter mb-2 italic">INFEX PRO</h1>
-            <p class="text-gray-500 uppercase tracking-[15px] text-[10px]">Direct Intelligence Access v5.2</p>
+        <header class="text-center mb-6 p-6 gold-border rounded bg-black">
+            <h1 class="text-5xl font-black gold-text tracking-tighter italic">INFEX OSINT v5.5</h1>
+            <p class="text-gray-600 uppercase tracking-[15px] text-[9px]">Neural GPRS & Intelligence Access</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
             <div class="lg:col-span-3 card p-6">
-                <label class="text-[10px] text-gray-500 uppercase mb-2 block">Target Input</label>
-                <input type="text" id="targetInput" class="w-full p-4 text-2xl font-bold rounded" placeholder="NICKNAME, EMAIL OR IP">
+                <input type="text" id="targetInput" class="w-full p-4 text-2xl font-bold rounded" placeholder="ENTER TARGET ID (NICK, EMAIL, IP)">
                 <div class="flex gap-2 mt-4">
-                    <button onclick="quickDork('leak')" class="flex-grow text-[9px] border border-red-900 text-red-500 p-2 uppercase hover:bg-red-500 hover:text-white transition">Search Leaks</button>
-                    <button onclick="quickDork('social')" class="flex-grow text-[9px] border border-blue-900 text-blue-500 p-2 uppercase hover:bg-blue-500 hover:text-white transition">Social Probing</button>
+                    <button onclick="quickDork('leak')" class="flex-grow text-[9px] border border-red-900 text-red-500 p-2 uppercase hover:bg-red-500 hover:text-white transition">Leak Trace</button>
+                    <button onclick="quickDork('social')" class="flex-grow text-[9px] border border-blue-900 text-blue-500 p-2 uppercase hover:bg-blue-500 hover:text-white transition">Social Map</button>
                 </div>
             </div>
             <button onclick="masterProtocol()" id="startBtn" class="btn-execute rounded p-6 flex flex-col items-center justify-center">
-                <i class="fas fa-search-location text-2xl mb-1"></i>
-                <span class="text-xl uppercase">Scan Target</span>
+                <i class="fas fa-microchip text-2xl mb-1"></i>
+                <span class="text-xl uppercase">Initiate Scan</span>
             </button>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-            <div class="lg:col-span-5 card p-4 h-[350px] relative overflow-hidden bg-black">
-                <h3 class="gold-text text-xs mb-4 uppercase italic font-bold">Neural Map</h3>
-                <div id="graph-area" class="w-full h-full relative">
-                    <div id="target-node" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border-2 border-gold flex items-center justify-center text-[10px] text-center p-2 font-bold bg-black z-20 gold-text">AWAITING</div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+            <div class="lg:col-span-5 card p-4 h-[400px] flex flex-col">
+                <h3 class="gold-text text-xs mb-4 uppercase font-bold italic"><i class="fas fa-project-diagram mr-2"></i> Active Neural Map</h3>
+                <div id="graph-area" class="flex-grow rounded border border-zinc-900 overflow-hidden">
+                    <div id="target-label" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 gold-text font-bold text-center text-xs uppercase tracking-widest bg-black/80 px-4 py-2 border border-gold/30">System Standby</div>
                 </div>
             </div>
 
-            <div class="lg:col-span-7 card p-5 flex flex-col h-[350px]">
-                <h3 class="gold-text text-xs mb-4 uppercase font-bold border-b border-gold/20 pb-2 italic">Metadata & Binary Analysis</h3>
-                <div id="drop-zone" class="border-2 border-dashed border-gray-800 p-4 rounded text-center mb-4 hover:border-gold cursor-pointer" onclick="document.getElementById('fileInput').click()">
-                    <span class="text-[9px] text-gray-600 uppercase italic">Click to ingest original file for deep parse</span>
+            <div class="lg:col-span-7 card p-5 flex flex-col">
+                <h3 class="gold-text text-xs mb-4 uppercase font-bold border-b border-gold/20 pb-2 italic flex justify-between italic">
+                    <span>Metadata & GPRS Intelligence</span>
+                    <span id="gps-status" class="hidden gps-badge">GPS SIGNAL DETECTED</span>
+                </h3>
+                <div id="drop-zone" class="p-4 rounded text-center mb-4" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-crosshairs text-3xl mb-2 text-zinc-800"></i>
+                    <p class="text-[10px] text-zinc-500 uppercase">Ingest original image for GPRS & Binary extraction</p>
                     <input type="file" id="fileInput" class="hidden" onchange="handleMetadata(this.files[0])">
                 </div>
-                <div id="metaResult" class="grid grid-cols-2 gap-2 font-mono bg-black p-3 border border-gray-900 rounded overflow-y-auto text-[10px]">
-                    <p class="col-span-full text-center text-gray-700">NO DATA LOADED</p>
+                <div id="metaResult" class="grid grid-cols-2 gap-2 font-mono bg-black p-4 border border-zinc-900 rounded overflow-y-auto max-h-[180px] text-[10px]">
+                    <p class="col-span-full text-center text-zinc-700 italic">SYSTEM READY FOR INGESTION...</p>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="card p-4">
-                <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2 italic">Intelligence Links</h3>
-                <div id="vectorList" class="overflow-y-auto max-h-[200px]"></div>
+                <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2">Intelligence Links</h3>
+                <div id="vectorList" class="space-y-1"></div>
             </div>
             <div class="md:col-span-2">
                 <div class="terminal" id="terminal"></div>
@@ -79,6 +97,23 @@
 
     <script>
         const terminal = document.getElementById('terminal');
+        const graph = document.getElementById('graph-area');
+
+        // ГЕНЕРАЦИЯ ЖИВОЙ НЕЙРОСЕТИ
+        function initNeuralMap() {
+            for(let i=0; i<40; i++) {
+                const node = document.createElement('div');
+                node.className = 'neural-node';
+                node.style.left = Math.random() * 100 + '%';
+                node.style.top = Math.random() * 100 + '%';
+                node.style.setProperty('--tw-x', (Math.random() * 200 - 100) + 'px');
+                node.style.setProperty('--tw-y', (Math.random() * 200 - 100) + 'px');
+                node.style.animationDuration = (5 + Math.random() * 10) + 's';
+                graph.appendChild(node);
+            }
+        }
+        initNeuralMap();
+
         function log(msg, color = "#00ff41") {
             const div = document.createElement('div');
             div.innerHTML = `<span style="color: #444">[${new Date().toLocaleTimeString()}]</span> <span style="color: ${color}">> ${msg}</span>`;
@@ -89,78 +124,77 @@
         async function masterProtocol() {
             const val = document.getElementById('targetInput').value.trim();
             if(!val) return;
-            document.querySelectorAll('.node').forEach(n => n.remove());
+            document.getElementById('target-label').innerText = "SCANNING: " + val;
             document.getElementById('vectorList').innerHTML = "";
-            document.getElementById('target-node').innerText = val;
-            log(`Запуск протокола прямого доступа для: ${val}`, "#fff");
+            log(`Запуск глубокого сканирования: ${val}`, "#fff");
 
-            const nodes = ["API_CON", "DB_SCAN", "SOC_MAP", "LEAK_CHK"];
-            for(let n of nodes) {
-                const nodeDiv = document.createElement("div");
-                nodeDiv.className = "node";
-                nodeDiv.style.left = Math.random() * 80 + 10 + "%";
-                nodeDiv.style.top = Math.random() * 80 + 10 + "%";
-                nodeDiv.innerText = n;
-                document.getElementById("graph-area").appendChild(nodeDiv);
-                log(`Подключение к узлу ${n}...`);
-                await new Promise(r => setTimeout(r, 400));
-            }
-
-            // ПРЯМЫЕ ССЫЛКИ НА СЕРВИСЫ
             const services = [
-                { name: "Epieos (Email/Phone Lookup)", url: `https://epieos.com/?q=${val}` },
-                { name: "WhatsMyName (Username Search)", url: `https://whatsmyname.app/?q=${val}` },
-                { name: "IntelX (Data Leaks)", url: `https://intelx.io/?s=${val}` },
-                { name: "Shodan (Infrastructure)", url: `https://www.shodan.io/search?query=${val}` },
-                { name: "Google Dork (Files/Docs)", url: `https://www.google.com/search?q=site:*.*+"${val}"+filetype:pdf` }
+                { name: "Epieos Intelligence", url: `https://epieos.com/?q=${val}` },
+                { name: "WhatsMyName Pro", url: `https://whatsmyname.app/?q=${val}` },
+                { name: "IntelX Leak Data", url: `https://intelx.io/?s=${val}` },
+                { name: "Shodan Recon", url: `https://www.shodan.io/search?query=${val}` }
             ];
 
-            services.forEach(s => {
+            for(let s of services) {
+                log(`Запрос к ${s.name}...`);
+                await new Promise(r => setTimeout(r, 400));
                 const a = document.createElement('div');
-                a.className = "vector-link";
+                a.className = "p-2 bg-white/5 border border-zinc-800 rounded text-[10px] mb-1 cursor-pointer hover:border-gold hover:text-gold transition";
                 a.innerHTML = `${s.name} <i class="fas fa-external-link-alt float-right mt-1"></i>`;
                 a.onclick = () => window.open(s.url, '_blank');
                 document.getElementById('vectorList').appendChild(a);
-            });
-
-            log("Все прямые каналы связи открыты.", "#00ff41");
+            }
+            log("ПРОТОКОЛ ЗАВЕРШЕН. ВСЕ КАНАЛЫ ОТКРЫТЫ.", "#00ff41");
         }
 
         function handleMetadata(file) {
             if(!file) return;
             const res = document.getElementById('metaResult');
-            res.innerHTML = "<p class='col-span-full text-gold text-center'>ПАРСИНГ БИНАРНЫХ ДАННЫХ...</p>";
-            log(`Анализ файла: ${file.name}`);
+            const gpsBadge = document.getElementById('gps-status');
+            res.innerHTML = "<p class='col-span-full text-gold text-center italic'>EXTRACTING DATA...</p>";
+            log(`Анализ бинарной структуры: ${file.name}`);
 
             EXIF.getData(file, function() {
-                const allTags = EXIF.getAllTags(this);
+                const tags = EXIF.getAllTags(this);
                 res.innerHTML = "";
                 
-                // Всегда показываем базовые данные
-                const base = {"Имя": file.name, "Размер": (file.size/1024).toFixed(1) + " KB", "Тип": file.type || "unknown"};
-                for(let [k,v] of Object.entries(base)) {
-                    res.innerHTML += `<div class='border-b border-white/5 p-1'><p class='text-gray-500 text-[8px]'>${k}</p><p class='text-white'>${v}</p></div>`;
+                const baseData = { "File": file.name, "Size": (file.size/1024).toFixed(1) + " KB", "Type": file.type };
+                for(let [k,v] of Object.entries(baseData)) {
+                    res.innerHTML += `<div class='border-b border-zinc-900 p-1'><p class='text-zinc-600 uppercase text-[8px]'>${k}</p><p class='text-white'>${v}</p></div>`;
                 }
 
-                // Показываем OSINT данные если они есть
-                const forensic = {"Устройство": allTags.Model, "Софт": allTags.Software, "Дата": allTags.DateTime, "GPS": allTags.GPSLatitude ? "НАЙДЕН" : "НЕТ"};
-                for(let [k,v] of Object.entries(forensic)) {
-                    if(v) res.innerHTML += `<div class='border-b border-white/5 p-1'><p class='text-gold text-[8px]'>${k}</p><p class='text-green-500'>${v}</p></div>`;
+                if (tags.GPSLatitude && tags.GPSLongitude) {
+                    gpsBadge.classList.remove('hidden');
+                    const lat = tags.GPSLatitude[0] + tags.GPSLatitude[1]/60 + tags.GPSLatitude[2]/3600;
+                    const lon = tags.GPSLongitude[0] + tags.GPSLongitude[1]/60 + tags.GPSLongitude[2]/3600;
+                    const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                    
+                    res.innerHTML += `<div class='col-span-full mt-2 bg-red-900/20 border border-red-600 p-2 text-center'>
+                        <p class='text-red-500 font-bold mb-1'>GPRS COORDINATES FOUND</p>
+                        <p class='text-white text-[9px] mb-2'>LAT: ${lat.toFixed(6)} | LON: ${lon.toFixed(6)}</p>
+                        <button onclick="window.open('${mapsUrl}', '_blank')" class='bg-red-600 text-white px-4 py-1 rounded text-[10px] font-bold uppercase'>Open Satellite Map</button>
+                    </div>`;
+                    log("ГЕОЛОКАЦИЯ (GPRS) УСПЕШНО ИЗВЛЕЧЕНА!", "red");
                 }
 
-                if(Object.keys(allTags).length === 0) log("Внимание: Метаданные очищены платформой. Вывод системных атрибутов.", "orange");
-                else log(`Успешно: Извлечено ${Object.keys(allTags).length} тегов.`, "#00ff41");
+                const exifData = { "Device": tags.Model, "Soft": tags.Software, "Date": tags.DateTime, "ISO": tags.ISOSpeedRatings };
+                for(let [k,v] of Object.entries(exifData)) {
+                    if(v) res.innerHTML += `<div class='border-b border-zinc-900 p-1'><p class='text-gold text-[8px] uppercase'>${k}</p><p class='text-green-500'>${v}</p></div>`;
+                }
+
+                if(Object.keys(tags).length === 0) log("Заметка: Метаданные стерты. Вывод системных атрибутов файла.", "orange");
+                else log(`Успех: Обнаружено ${Object.keys(tags).length} тех. параметров.`);
             });
         }
 
         function quickDork(type) {
             const val = document.getElementById('targetInput').value;
             if(!val) return;
-            const q = type === 'leak' ? `"${val}" password OR leak OR database` : `site:instagram.com OR site:facebook.com "${val}"`;
+            const q = type === 'leak' ? `"${val}" password OR leak` : `site:instagram.com OR site:twitter.com "${val}"`;
             window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
         }
 
-        log("INFEX OSINT v5.2 ONLINE. ГОТОВ К РАБОТЕ.");
+        log("INFEX OSINT v5.5 ONLINE. СИСТЕМА ГОТОВА.");
     </script>
 </body>
 </html>
