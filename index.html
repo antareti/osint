@@ -3,108 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFEX OSINT PRO | FINAL FORENSIC</title>
+    <title>INFEX OSINT PRO | DIRECT ACCESS EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --gold: #d4af37; --dark: #050505; --neon: #00ff41; --danger: #ff3e3e; }
-        body { 
-            background: var(--dark); color: #eee; font-family: 'Courier New', monospace; 
-            background-image: radial-gradient(circle at center, #111 0%, #050505 100%);
-            min-height: 100vh;
-        }
+        :root { --gold: #d4af37; --dark: #050505; --neon: #00ff41; }
+        body { background: var(--dark); color: #eee; font-family: 'Courier New', monospace; background-image: radial-gradient(circle at center, #111 0%, #050505 100%); }
         .gold-border { border: 1px solid var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.2); }
         .gold-text { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
         .card { background: rgba(10,10,10,0.95); border: 1px solid rgba(212,175,55,0.3); border-radius: 4px; position: relative; }
-        
-        .btn-execute { 
-            background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728);
-            color: black; font-weight: 900; transition: 0.4s; cursor: pointer; border: none;
-        }
-        .btn-execute:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--gold); filter: brightness(1.2); }
-
-        .terminal { background: #000; border: 1px solid #1a1a1a; height: 220px; overflow-y: auto; font-size: 11px; padding: 15px; color: var(--neon); border-left: 3px solid var(--gold); }
+        .btn-execute { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728); color: black; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; }
+        .btn-execute:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--gold); }
+        .terminal { background: #000; border: 1px solid #1a1a1a; height: 200px; overflow-y: auto; font-size: 11px; padding: 15px; color: var(--neon); border-left: 3px solid var(--gold); }
         input { background: #000 !important; border: 1px solid #333 !important; color: var(--gold) !important; outline: none; }
-
-        .node { position: absolute; font-size: 9px; color: var(--neon); background: rgba(0,255,65,0.1); padding: 3px 8px; border: 1px solid var(--neon); border-radius: 2px; transition: 0.5s; z-index: 50; }
-        .scanning-active { animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); } }
-        
-        #drop-zone { border: 2px dashed #222; transition: 0.3s; cursor: pointer; min-height: 140px; }
-        #drop-zone:hover { border-color: var(--gold); background: rgba(212,175,55,0.05); }
-        
-        .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 10px; }
-        .meta-item { border-bottom: 1px solid #1a1a1a; padding-bottom: 4px; }
-        .meta-label { color: #555; text-transform: uppercase; font-size: 8px; margin-bottom: 2px; }
-        .meta-val { color: var(--neon); font-weight: bold; overflow-wrap: break-word; }
+        .node { position: absolute; font-size: 9px; color: var(--neon); background: rgba(0,255,65,0.1); padding: 3px 8px; border: 1px solid var(--neon); border-radius: 2px; z-index: 50; }
+        .vector-link { display: block; padding: 8px; margin-bottom: 5px; background: rgba(255,255,255,0.05); border: 1px solid #222; border-radius: 3px; font-size: 10px; transition: 0.2s; cursor: pointer; }
+        .vector-link:hover { border-color: var(--gold); background: rgba(212,175,55,0.1); color: var(--gold); }
     </style>
 </head>
 <body class="p-4 md:p-10">
 
     <div class="max-w-7xl mx-auto">
-        <header class="text-center mb-10 p-6 gold-border rounded bg-black relative">
-            <div class="absolute top-2 left-4 text-[8px] text-gray-600">INFEX_SECURITY_ENCRYPTED: TRUE</div>
+        <header class="text-center mb-8 p-6 gold-border rounded bg-black">
             <h1 class="text-6xl font-black gold-text tracking-tighter mb-2 italic">INFEX PRO</h1>
-            <p class="text-gray-500 uppercase tracking-[15px] text-[10px]">Strategic Forensic Framework v5.0</p>
+            <p class="text-gray-500 uppercase tracking-[15px] text-[10px]">Direct Intelligence Access v5.2</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
             <div class="lg:col-span-3 card p-6">
-                <label class="text-[10px] text-gray-500 uppercase mb-2 block">Target Identification</label>
-                <input type="text" id="targetInput" class="w-full p-4 text-2xl font-bold rounded" placeholder="NICKNAME, EMAIL, IP OR DOMAIN">
+                <label class="text-[10px] text-gray-500 uppercase mb-2 block">Target Input</label>
+                <input type="text" id="targetInput" class="w-full p-4 text-2xl font-bold rounded" placeholder="NICKNAME, EMAIL OR IP">
                 <div class="flex gap-2 mt-4">
-                    <button onclick="quickDork('leak')" class="flex-grow text-[9px] border border-red-900 text-red-500 p-2 uppercase hover:bg-red-900/20 transition">Leaks</button>
-                    <button onclick="quickDork('docs')" class="flex-grow text-[9px] border border-blue-900 text-blue-500 p-2 uppercase hover:bg-blue-900/20 transition">Internal Docs</button>
-                    <button onclick="quickDork('social')" class="flex-grow text-[9px] border border-gold/30 text-gold p-2 uppercase hover:bg-gold/10 transition">Social Matrix</button>
+                    <button onclick="quickDork('leak')" class="flex-grow text-[9px] border border-red-900 text-red-500 p-2 uppercase hover:bg-red-500 hover:text-white transition">Search Leaks</button>
+                    <button onclick="quickDork('social')" class="flex-grow text-[9px] border border-blue-900 text-blue-500 p-2 uppercase hover:bg-blue-500 hover:text-white transition">Social Probing</button>
                 </div>
             </div>
-            <button onclick="masterProtocol()" id="startBtn" class="btn-execute rounded p-6 flex flex-col items-center justify-center gap-2">
-                <i class="fas fa-satellite-dish text-2xl"></i>
-                <span class="text-xl uppercase tracking-tighter">Execute Scan</span>
-                <span class="text-[9px] opacity-70">OSINT PROTOCOL 5.0</span>
+            <button onclick="masterProtocol()" id="startBtn" class="btn-execute rounded p-6 flex flex-col items-center justify-center">
+                <i class="fas fa-search-location text-2xl mb-1"></i>
+                <span class="text-xl uppercase">Scan Target</span>
             </button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-            <div class="lg:col-span-5 card p-4 h-[420px] relative overflow-hidden bg-black">
-                <h3 class="gold-text text-xs mb-4 uppercase font-bold italic"><i class="fas fa-project-diagram mr-2"></i> Neural Relation Graph</h3>
+            <div class="lg:col-span-5 card p-4 h-[350px] relative overflow-hidden bg-black">
+                <h3 class="gold-text text-xs mb-4 uppercase italic font-bold">Neural Map</h3>
                 <div id="graph-area" class="w-full h-full relative">
-                    <div id="target-node" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full border-2 border-gold flex items-center justify-center text-[10px] text-center p-3 font-bold bg-black z-20 gold-text shadow-[0_0_20px_rgba(212,175,55,0.2)]">WAITING</div>
+                    <div id="target-node" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border-2 border-gold flex items-center justify-center text-[10px] text-center p-2 font-bold bg-black z-20 gold-text">AWAITING</div>
                 </div>
             </div>
 
-            <div class="lg:col-span-7 card p-5 flex flex-col">
-                <h3 class="gold-text text-xs mb-4 uppercase font-bold border-b border-gold/20 pb-2 flex justify-between">
-                    <span>Forensic Metadata Engine</span>
-                    <span id="file-status" class="text-gray-600 font-normal">READY</span>
-                </h3>
-                <div id="drop-zone" class="flex flex-col items-center justify-center p-4 rounded mb-4" onclick="document.getElementById('fileInput').click()">
-                    <i class="fas fa-microscope text-3xl mb-2 text-gray-700"></i>
-                    <span class="text-[9px] text-gray-500 uppercase">Drop Original File to Analyze EXIF / Binary Data</span>
+            <div class="lg:col-span-7 card p-5 flex flex-col h-[350px]">
+                <h3 class="gold-text text-xs mb-4 uppercase font-bold border-b border-gold/20 pb-2 italic">Metadata & Binary Analysis</h3>
+                <div id="drop-zone" class="border-2 border-dashed border-gray-800 p-4 rounded text-center mb-4 hover:border-gold cursor-pointer" onclick="document.getElementById('fileInput').click()">
+                    <span class="text-[9px] text-gray-600 uppercase italic">Click to ingest original file for deep parse</span>
                     <input type="file" id="fileInput" class="hidden" onchange="handleMetadata(this.files[0])">
                 </div>
-                <div id="metaResult" class="meta-grid font-mono bg-black p-4 border border-gray-900 rounded overflow-y-auto max-h-[180px]">
-                    <p class="col-span-full text-center text-gray-700 text-[10px] uppercase">Awaiting file ingestion for deep parse...</p>
+                <div id="metaResult" class="grid grid-cols-2 gap-2 font-mono bg-black p-3 border border-gray-900 rounded overflow-y-auto text-[10px]">
+                    <p class="col-span-full text-center text-gray-700">NO DATA LOADED</p>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="card p-4">
-                <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2">Intelligence Vectors</h3>
-                <div id="vectorList" class="space-y-1 overflow-y-auto max-h-[180px]"></div>
+                <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2 italic">Intelligence Links</h3>
+                <div id="vectorList" class="overflow-y-auto max-h-[200px]"></div>
             </div>
             <div class="md:col-span-2">
-                <div class="terminal font-mono shadow-2xl" id="terminal"></div>
+                <div class="terminal" id="terminal"></div>
             </div>
         </div>
     </div>
 
     <script>
         const terminal = document.getElementById('terminal');
-
         function log(msg, color = "#00ff41") {
             const div = document.createElement('div');
             div.innerHTML = `<span style="color: #444">[${new Date().toLocaleTimeString()}]</span> <span style="color: ${color}">> ${msg}</span>`;
@@ -112,119 +86,81 @@
             terminal.scrollTop = terminal.scrollHeight;
         }
 
-        function addNode(name) {
-            const area = document.getElementById("graph-area");
-            const node = document.createElement("div");
-            node.className = "node";
-            const angle = Math.random() * Math.PI * 2;
-            const dist = 70 + Math.random() * 85;
-            const x = 50 + Math.cos(angle) * (dist/2.5);
-            const y = 50 + Math.sin(angle) * (dist/2.5);
-            node.style.left = x + "%"; node.style.top = y + "%";
-            node.innerText = name.toUpperCase();
-            area.appendChild(node);
-        }
-
         async function masterProtocol() {
             const val = document.getElementById('targetInput').value.trim();
             if(!val) return;
             document.querySelectorAll('.node').forEach(n => n.remove());
             document.getElementById('vectorList').innerHTML = "";
-            const startBtn = document.getElementById('startBtn');
-            startBtn.disabled = true;
-
-            log(`INITIATING OSINT PROTOCOL FOR: ${val}`, "#fff");
             document.getElementById('target-node').innerText = val;
-            document.getElementById('target-node').classList.add('scanning-active');
+            log(`Запуск протокола прямого доступа для: ${val}`, "#fff");
 
-            const steps = ["Decrypting layers...", "Mining social data...", "Mapping leaks...", "Finalizing vectors..."];
-            for(let s of steps) { 
-                log(s); 
-                addNode(s.split(" ")[0]); 
-                await new Promise(r => setTimeout(r, 600)); 
+            const nodes = ["API_CON", "DB_SCAN", "SOC_MAP", "LEAK_CHK"];
+            for(let n of nodes) {
+                const nodeDiv = document.createElement("div");
+                nodeDiv.className = "node";
+                nodeDiv.style.left = Math.random() * 80 + 10 + "%";
+                nodeDiv.style.top = Math.random() * 80 + 10 + "%";
+                nodeDiv.innerText = n;
+                document.getElementById("graph-area").appendChild(nodeDiv);
+                log(`Подключение к узлу ${n}...`);
+                await new Promise(r => setTimeout(r, 400));
             }
 
-            const links = ["Epieos Profile", "WhatsMyName Enum", "IntelX Archive", "Shodan Recon"];
-            links.forEach(l => {
-                const div = document.createElement('div');
-                div.className = "p-2 bg-white/5 border border-zinc-900 rounded hover:border-gold/50 cursor-pointer text-[10px] mb-1 transition";
-                div.innerHTML = `<span>${l}</span>`;
-                div.onclick = () => window.open(`https://google.com/search?q=${l}+${val}`);
-                document.getElementById('vectorList').appendChild(div);
+            // ПРЯМЫЕ ССЫЛКИ НА СЕРВИСЫ
+            const services = [
+                { name: "Epieos (Email/Phone Lookup)", url: `https://epieos.com/?q=${val}` },
+                { name: "WhatsMyName (Username Search)", url: `https://whatsmyname.app/?q=${val}` },
+                { name: "IntelX (Data Leaks)", url: `https://intelx.io/?s=${val}` },
+                { name: "Shodan (Infrastructure)", url: `https://www.shodan.io/search?query=${val}` },
+                { name: "Google Dork (Files/Docs)", url: `https://www.google.com/search?q=site:*.*+"${val}"+filetype:pdf` }
+            ];
+
+            services.forEach(s => {
+                const a = document.createElement('div');
+                a.className = "vector-link";
+                a.innerHTML = `${s.name} <i class="fas fa-external-link-alt float-right mt-1"></i>`;
+                a.onclick = () => window.open(s.url, '_blank');
+                document.getElementById('vectorList').appendChild(a);
             });
 
-            log("SCAN COMPLETE. TARGET IDENTIFIED.", "#00ff41");
-            document.getElementById('target-node').classList.remove('scanning-active');
-            startBtn.disabled = false;
+            log("Все прямые каналы связи открыты.", "#00ff41");
         }
 
         function handleMetadata(file) {
             if(!file) return;
             const res = document.getElementById('metaResult');
-            const status = document.getElementById('file-status');
-            res.innerHTML = "<p class='col-span-full scanning-active text-gold text-center'>DECODING BINARY HEADERS...</p>";
-            status.innerText = "PROCESSING...";
-            log(`File Ingested: ${file.name}`, "#d4af37");
+            res.innerHTML = "<p class='col-span-full text-gold text-center'>ПАРСИНГ БИНАРНЫХ ДАННЫХ...</p>";
+            log(`Анализ файла: ${file.name}`);
 
             EXIF.getData(file, function() {
-                const data = EXIF.getAllTags(this);
+                const allTags = EXIF.getAllTags(this);
                 res.innerHTML = "";
                 
-                // Добавляем технические данные файла (которые есть ВСЕГДА)
-                const techData = {
-                    "File Name": file.name,
-                    "Size": (file.size / 1024).toFixed(2) + " KB",
-                    "MIME Type": file.type || "application/octet-stream",
-                    "Encoding": "Base64/Binary",
-                    "Entropy": (Math.random() * (8 - 4) + 4).toFixed(2) + " bits",
-                    "Last Mod": new Date(file.lastModified).toLocaleDateString()
-                };
-
-                // Если EXIF пуст, имитируем глубокий анализ структуры (для красоты и PRO-вида)
-                const forensicData = {
-                    "Make": data.Make || "STRIPPED/CLEANED",
-                    "Model": data.Model || "UNKNOWN_HARDWARE",
-                    "Date": data.DateTime || "DATA_SCRUBBED",
-                    "Software": data.Software || "GENERIC_ENCODER",
-                    "GPS": data.GPSLatitude ? "YES" : "NO_SIGNAL",
-                    "ISO": data.ISOSpeedRatings || "AUTO"
-                };
-
-                // Вывод тех. данных
-                for (let [l, v] of Object.entries(techData)) {
-                    res.innerHTML += `<div class="meta-item"><p class="meta-label">${l}</p><p class="meta-val">${v}</p></div>`;
-                }
-                // Вывод OSINT данных
-                for (let [l, v] of Object.entries(forensicData)) {
-                    res.innerHTML += `<div class="meta-item"><p class="meta-label">OSINT_${l}</p><p class="meta-val">${v}</p></div>`;
+                // Всегда показываем базовые данные
+                const base = {"Имя": file.name, "Размер": (file.size/1024).toFixed(1) + " KB", "Тип": file.type || "unknown"};
+                for(let [k,v] of Object.entries(base)) {
+                    res.innerHTML += `<div class='border-b border-white/5 p-1'><p class='text-gray-500 text-[8px]'>${k}</p><p class='text-white'>${v}</p></div>`;
                 }
 
-                if(Object.keys(data).length === 0) {
-                    log("Warning: Meta-tags stripped by platform. Switching to Binary Heuristics.", "orange");
-                } else {
-                    log(`Success: Found ${Object.keys(data).length} raw metadata tags.`, "#00ff41");
+                // Показываем OSINT данные если они есть
+                const forensic = {"Устройство": allTags.Model, "Софт": allTags.Software, "Дата": allTags.DateTime, "GPS": allTags.GPSLatitude ? "НАЙДЕН" : "НЕТ"};
+                for(let [k,v] of Object.entries(forensic)) {
+                    if(v) res.innerHTML += `<div class='border-b border-white/5 p-1'><p class='text-gold text-[8px]'>${k}</p><p class='text-green-500'>${v}</p></div>`;
                 }
-                status.innerText = "ANALYZED";
+
+                if(Object.keys(allTags).length === 0) log("Внимание: Метаданные очищены платформой. Вывод системных атрибутов.", "orange");
+                else log(`Успешно: Извлечено ${Object.keys(allTags).length} тегов.`, "#00ff41");
             });
         }
 
         function quickDork(type) {
             const val = document.getElementById('targetInput').value;
             if(!val) return;
-            window.open(`https://www.google.com/search?q=${val}+filetype:pdf`);
+            const q = type === 'leak' ? `"${val}" password OR leak OR database` : `site:instagram.com OR site:facebook.com "${val}"`;
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
         }
 
-        function generateReport() {
-            const val = document.getElementById('targetInput').value || "UNKNOWN";
-            const report = `=== INFEX PRO V5.0 ===\nTarget: ${val}\nStatus: ANALYZED\nDate: ${new Date().toISOString()}\n\nLogs:\n${terminal.innerText}`;
-            const blob = new Blob([report], {type: 'text/plain'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `REPORT_${val}.txt`;
-            a.click();
-        }
-
-        log("SYSTEM ONLINE. WAITING FOR MASTER INPUT.");
+        log("INFEX OSINT v5.2 ONLINE. ГОТОВ К РАБОТЕ.");
     </script>
 </body>
 </html>
