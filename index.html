@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFEX OSINT PRO | GOVERNMENT EDITION</title>
+    <title>INFEX OSINT PRO | ULTIMATE FORENSIC EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,26 +19,23 @@
         .gold-text { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
         .card { background: rgba(10,10,10,0.95); border: 1px solid rgba(212,175,55,0.3); border-radius: 4px; }
         
-        /* КНОПКА ЗАПУСКА */
         .btn-execute { 
             background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728);
             color: black; font-weight: 900; transition: 0.4s; border: none; cursor: pointer;
-            text-shadow: 0 1px 0 rgba(255,255,255,0.3);
         }
         .btn-execute:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--gold); filter: brightness(1.2); }
-        .btn-execute:active { transform: scale(0.95); }
 
         .terminal { background: #000; border: 1px solid #1a1a1a; height: 200px; overflow-y: auto; font-size: 11px; padding: 15px; color: var(--neon); }
         input { background: #000 !important; border: 1px solid #333 !important; color: var(--gold) !important; outline: none; }
-        input:focus { border-color: var(--gold) !important; }
 
-        /* ГРАФ */
         .node { position: absolute; font-size: 9px; color: var(--neon); background: rgba(0,255,65,0.1); padding: 3px 8px; border: 1px solid var(--neon); border-radius: 2px; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .scanning-active { animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.1); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.1); } }
         
-        #drop-zone { border: 2px dashed #222; transition: 0.3s; cursor: pointer; }
+        #drop-zone { border: 2px dashed #222; transition: 0.3s; cursor: pointer; min-height: 150px; }
         #drop-zone:hover { border-color: var(--gold); background: rgba(212,175,55,0.05); }
+        .meta-label { color: #555; text-transform: uppercase; font-size: 8px; }
+        .meta-val { color: var(--neon); font-size: 10px; }
     </style>
 </head>
 <body class="p-4 md:p-10">
@@ -46,7 +43,7 @@
     <div class="max-w-7xl mx-auto">
         <header class="text-center mb-8 p-6 gold-border rounded bg-black">
             <h1 class="text-6xl font-black gold-text tracking-tighter mb-2 italic">INFEX PRO</h1>
-            <p class="text-gray-500 uppercase tracking-[15px] text-[10px]">Strategic Data Reconnaissance v4.5</p>
+            <p class="text-gray-500 uppercase tracking-[15px] text-[10px]">Strategic Data Reconnaissance v4.8</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
@@ -62,44 +59,47 @@
             <button onclick="masterProtocol()" id="startBtn" class="btn-execute rounded p-6 flex flex-col items-center justify-center gap-2">
                 <i class="fas fa-bolt text-2xl"></i>
                 <span class="text-xl uppercase">Execute</span>
-                <span class="text-[10px] opacity-70">Protocol v4.5</span>
+                <span class="text-[10px] opacity-70">Protocol v4.8</span>
             </button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-            <div class="lg:col-span-5 card p-4 h-[350px] relative overflow-hidden bg-black">
+            <div class="lg:col-span-5 card p-4 h-[400px] relative overflow-hidden bg-black">
                 <h3 class="gold-text text-xs mb-4 uppercase font-bold"><i class="fas fa-project-diagram mr-2"></i> Relation Graph</h3>
                 <div id="graph-area" class="w-full h-full relative">
                     <div id="target-node" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border-2 border-gold flex items-center justify-center text-[10px] text-center p-2 font-bold bg-black z-20 gold-text">AWAITING</div>
                 </div>
             </div>
 
-            <div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="card p-4 flex flex-col">
-                    <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2">Intelligence Vectors</h3>
-                    <div id="vectorList" class="space-y-2 flex-grow overflow-y-auto max-h-[250px]">
-                        <p class="text-gray-700 italic text-[10px]">No active links...</p>
-                    </div>
-                </div>
-
-                <div class="card p-4 flex flex-col">
-                    <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2">Metadata Engine</h3>
-                    <div id="drop-zone" class="flex-grow flex flex-col items-center justify-center p-4 rounded" onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-cloud-upload-alt text-2xl mb-2 text-gray-700"></i>
-                        <span class="text-[10px] text-gray-500 uppercase text-center">Click to upload or Drag & Drop Photo</span>
+            <div class="lg:col-span-7 grid grid-cols-1 gap-6">
+                <div class="card p-4 flex flex-col h-full">
+                    <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2">Forensic Metadata Engine</h3>
+                    <div id="drop-zone" class="flex-grow flex flex-col items-center justify-center p-4 rounded mb-4" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-fingerprint text-3xl mb-2 text-gray-700"></i>
+                        <span class="text-[10px] text-gray-500 uppercase text-center">Click or Drag & Drop Photo for Deep Analysis</span>
                         <input type="file" id="fileInput" class="hidden" onchange="handleMetadata(this.files[0])">
-                        <div id="metaResult" class="mt-4 text-[9px] text-green-500 font-mono text-center"></div>
+                    </div>
+                    <div id="metaResult" class="grid grid-cols-2 md:grid-cols-3 gap-2 font-mono bg-black p-3 border border-gray-900 rounded overflow-y-auto max-h-[200px]">
+                        <p class="col-span-full text-center text-gray-700 text-[10px]">AWAITING FILE INGESTION...</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="terminal font-mono mb-4 shadow-2xl" id="terminal">
-            <div>> [SYSTEM] INFEX OSINT BOOTED. SESSION ENCRYPTED.</div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="card p-4 md:col-span-1">
+                <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2">Intelligence Vectors</h3>
+                <div id="vectorList" class="space-y-1 overflow-y-auto max-h-[180px]"></div>
+            </div>
+            <div class="md:col-span-2">
+                <div class="terminal font-mono shadow-2xl" id="terminal">
+                    <div>> [SYSTEM] INFEX OSINT BOOTED. STANDING BY...</div>
+                </div>
+            </div>
         </div>
 
         <div class="flex justify-between items-center text-[10px]">
-            <span class="text-gray-700 uppercase">Status: <span class="text-green-600">Standby</span></span>
+            <span class="text-gray-700 uppercase">Status: <span id="status-text" class="text-green-600">Standby</span></span>
             <button onclick="generateReport()" class="gold-text uppercase font-bold border-b border-gold hover:text-white transition">Download Analytical Report (.TXT)</button>
         </div>
     </div>
@@ -118,74 +118,39 @@
             const area = document.getElementById("graph-area");
             const node = document.createElement("div");
             node.className = "node";
-            
-            // Расчет позиции "взрыва" из центра
             const angle = Math.random() * Math.PI * 2;
             const dist = 70 + Math.random() * 80;
             const x = 50 + Math.cos(angle) * (dist/2.5);
             const y = 50 + Math.sin(angle) * (dist/2.5);
-            
-            node.style.left = x + "%";
-            node.style.top = y + "%";
+            node.style.left = x + "%"; node.style.top = y + "%";
             node.innerText = name.toUpperCase();
             area.appendChild(node);
         }
 
-        function detectType(input) {
-            if(input.includes("@")) return "EMAIL";
-            if(/^\d+\.\d+\.\d+\.\d+$/.test(input)) return "IPV4";
-            if(input.includes(".")) return "HOST/DOMAIN";
-            return "NICKNAME";
-        }
-
-        function createLink(containerId, title, url) {
-            const container = document.getElementById(containerId);
-            if(container.innerText.includes("active")) container.innerHTML = "";
-            const div = document.createElement('div');
-            div.className = "flex justify-between items-center p-2 bg-white/5 border border-gray-900 rounded hover:border-gold/50 cursor-pointer mb-2 transition";
-            div.innerHTML = `<span class="text-[10px]">${title}</span> <i class="fas fa-external-link-alt text-[8px] text-gold/60"></i>`;
-            div.onclick = () => window.open(url, '_blank');
-            container.appendChild(div);
-        }
-
         async function masterProtocol() {
             const val = document.getElementById('targetInput').value.trim();
-            if(!val) return alert("Введите цель!");
-
-            // Сброс интерфейса
+            if(!val) return;
             document.querySelectorAll('.node').forEach(n => n.remove());
             document.getElementById('vectorList').innerHTML = "";
             const startBtn = document.getElementById('startBtn');
             startBtn.disabled = true;
-
-            const type = detectType(val);
-            log(`Инициация протокола для: ${val}`, "#fff");
-            log(`Тип цели определен: ${type}`, "#d4af37");
-
             document.getElementById('target-node').innerText = val;
             document.getElementById('target-node').classList.add('scanning-active');
 
-            const steps = [
-                {m: "Синхронизация с серверами разведки...", n: "Sync"},
-                {m: "Поиск цифрового следа в соцсетях...", n: "Socials"},
-                {m: "Проверка реестров утечек...", n: "Leaks"},
-                {m: "Анализ сетевых узлов...", n: "Infrastructure"},
-                {m: "Сборка корреляционной карты...", n: "Master_Map"}
-            ];
+            log(`Инициация анализа для: ${val}`, "#fff");
+            const steps = ["Синхронизация...", "Скан соцсетей...", "Поиск утечек...", "Анализ узлов..."];
+            for(let s of steps) { log(s); addNode(s.split(" ")[0]); await new Promise(r => setTimeout(r, 500)); }
 
-            for(let step of steps) {
-                log(step.m);
-                addNode(step.n);
-                await new Promise(r => setTimeout(r, 600));
-            }
+            const vList = ["Epieos Intelligence", "WhatsMyName Enum", "IntelX Data", "Shodan DB"];
+            vList.forEach(v => {
+                const div = document.createElement('div');
+                div.className = "p-2 bg-white/5 border border-gray-900 rounded hover:border-gold/50 cursor-pointer text-[10px] mb-1";
+                div.innerHTML = `<span>${v}</span>`;
+                div.onclick = () => window.open(`https://google.com/search?q=${v}+${val}`, '_blank');
+                document.getElementById('vectorList').appendChild(div);
+            });
 
-            // Наполнение ссылками (тестовые векторы)
-            createLink('vectorList', "Epieos Profile Search", `https://epieos.com/?q=${val}`);
-            createLink('vectorList', "WhatsMyName Enumerator", `https://whatsmyname.app/?q=${val}`);
-            createLink('vectorList', "IntelX Data Search", `https://intelx.io/?s=${val}`);
-            createLink('vectorList', "Shodan Intelligence", `https://www.shodan.io/search?query=${val}`);
-
-            log("АНАЛИЗ ЗАВЕРШЕН. ВЕКТОРЫ СФОРМИРОВАНЫ.", "#00ff41");
+            log("ОБРАБОТКА ЗАВЕРШЕНА.", "#00ff41");
             document.getElementById('target-node').classList.remove('scanning-active');
             startBtn.disabled = false;
         }
@@ -193,49 +158,62 @@
         function handleMetadata(file) {
             if(!file) return;
             const res = document.getElementById('metaResult');
-            res.innerHTML = "EXTRACTING EXIF...";
-            log(`Загружен файл: ${file.name}`, "#d4af37");
+            res.innerHTML = "<p class='col-span-full scanning-active text-gold text-center uppercase'>Декодирование заголовков...</p>";
+            log(`Инжекция файла: ${file.name}`, "#d4af37");
 
             if(file.type.match('image.*')) {
                 EXIF.getData(file, function() {
-                    const make = EXIF.getTag(this, "Make") || "N/A";
-                    const model = EXIF.getTag(this, "Model") || "N/A";
-                    const date = EXIF.getTag(this, "DateTime") || "N/A";
-                    res.innerHTML = `DEVICE: ${make} ${model}<br>DATE: ${date}`;
-                    log(`Метаданные извлечены: ${make} ${model}`, "#neon");
+                    const data = EXIF.getAllTags(this);
+                    res.innerHTML = "";
+                    
+                    const fields = {
+                        "Производитель": data.Make,
+                        "Модель": data.Model,
+                        "Дата съемки": data.DateTime,
+                        "ПО Смартфона": data.Software,
+                        "Выдержка": data.ExposureTime ? `1/${Math.round(1/data.ExposureTime)}` : null,
+                        "ISO": data.ISOSpeedRatings,
+                        "Диафрагма": data.FNumber ? `f/${data.FNumber}` : null,
+                        "Фокус": data.FocalLength ? `${data.FocalLength}mm` : null,
+                        "Широта (GPS)": data.GPSLatitude ? "DETECTED" : "HIDDEN",
+                        "Долгота (GPS)": data.GPSLongitude ? "DETECTED" : "HIDDEN"
+                    };
+
+                    for (const [label, val] of Object.entries(fields)) {
+                        if (val) {
+                            res.innerHTML += `<div><p class="meta-label">${label}</p><p class="meta-val">${val}</p></div>`;
+                        }
+                    }
+
+                    if (data.GPSLatitude && data.GPSLongitude) {
+                        const lat = data.GPSLatitude[0] + data.GPSLatitude[1]/60 + data.GPSLatitude[2]/3600;
+                        const lon = data.GPSLongitude[0] + data.GPSLongitude[1]/60 + data.GPSLongitude[2]/3600;
+                        const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                        res.innerHTML += `<div class="col-span-full mt-2"><button onclick="window.open('${mapsUrl}')" class="w-full p-1 bg-red-900/30 border border-red-600 text-red-500 text-[9px] uppercase">Открыть координаты на карте</button></div>`;
+                        log("ГЕОЛОКАЦИЯ ОБНАРУЖЕНА!", "red");
+                    }
+
+                    log(`Анализ ${file.name} завершен. Найдено параметров: ${Object.keys(data).length}`, "#neon");
                 });
             } else {
-                res.innerHTML = `FILE: ${file.name}<br>SIZE: ${(file.size/1024).toFixed(1)} KB`;
+                res.innerHTML = `<p class="col-span-full text-center text-gray-500">FILE: ${file.name}<br>NON-IMAGE DATA</p>`;
             }
         }
 
         function quickDork(type) {
             const val = document.getElementById('targetInput').value;
-            if(!val) return alert("Введите цель!");
-            let q = `site:*.* "${val}" filetype:pdf`;
-            window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
+            if(!val) return;
+            window.open(`https://www.google.com/search?q=${val}+filetype:pdf`, '_blank');
         }
 
         function generateReport() {
             const val = document.getElementById('targetInput').value || "UNKNOWN";
-            const content = `
-=== INFEX OSINT FINAL REPORT ===
-Target: ${val}
-Type: ${detectType(val)}
-Timestamp: ${new Date().toISOString()}
-Risk Level: HIGH
---------------------------------
-Summary: Digital footprint located.
-Vectors identified: 4 active nodes.
---------------------------------
-Generated by INFEX PRO v4.5
-            `;
-            const blob = new Blob([content], {type: 'text/plain'});
+            const report = `=== INFEX PRO MASTER REPORT ===\nTarget: ${val}\nGenerated: ${new Date().toISOString()}\nStatus: COMPROMISED\n\nLogs:\n${terminal.innerText}`;
+            const blob = new Blob([report], {type: 'text/plain'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
             a.download = `INFEX_REPORT_${val}.txt`;
             a.click();
-            log("ОТЧЕТ СКАЧАН.", "#fff");
         }
 
         // Drag & Drop
@@ -243,7 +221,6 @@ Generated by INFEX PRO v4.5
         dz.ondragover = (e) => { e.preventDefault(); dz.style.borderColor = "#d4af37"; };
         dz.ondragleave = () => { dz.style.borderColor = "#222"; };
         dz.ondrop = (e) => { e.preventDefault(); handleMetadata(e.dataTransfer.files[0]); };
-
     </script>
 </body>
 </html>
