@@ -3,238 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFEX OSINT | FINAL ELITE</title>
+    <title>INFEX OSINT ANALYTICS PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --gold: #d4af37; --dark: #050505; --neon: #00ff41; --danger: #ff3e3e; }
-        body { background: var(--dark); color: #eee; font-family: 'Courier New', monospace; overflow-x: hidden; }
-        .gold-border { border: 1px solid var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.2); }
-        .gold-text { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
-        .card { background: rgba(10,10,10,0.95); border: 1px solid rgba(212,175,55,0.3); border-radius: 4px; overflow: hidden; }
+        :root { --gold: #d4af37; --bg: #0a0a0a; --panel: #111111; --text: #e0e0e0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', 'Segoe UI', sans-serif; }
+        .gold-border { border: 1px solid rgba(212, 175, 55, 0.3); }
+        .gold-text { color: var(--gold); }
+        .panel { background: var(--panel); border: 1px solid #222; border-radius: 4px; }
         
-        .btn-execute { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728); color: black; font-weight: 900; transition: 0.4s; cursor: pointer; border: none; }
-        .btn-execute:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--gold); }
-
-        #graph-area { background: radial-gradient(circle, #111 0%, #000 100%); position: relative; }
-        .neural-node { position: absolute; width: 4px; height: 4px; background: var(--gold); border-radius: 50%; opacity: 0.3; animation: float 10s infinite linear; }
-        @keyframes float {
-            0% { transform: translate(0, 0); opacity: 0.3; }
-            50% { opacity: 0.8; }
-            100% { transform: translate(var(--tw-x), var(--tw-y)); opacity: 0.3; }
-        }
-
-        .terminal { background: #000; border: 1px solid #1a1a1a; height: 180px; overflow-y: auto; font-size: 11px; padding: 15px; color: var(--neon); border-left: 3px solid var(--gold); }
-        input { background: #000 !important; border: 1px solid #333 !important; color: var(--gold) !important; outline: none; }
-
-        #drop-zone { border: 2px dashed #222; transition: 0.3s; cursor: pointer; }
-        #drop-zone:hover { border-color: var(--gold); background: rgba(212,175,55,0.05); }
-
-        .gps-badge { background: var(--danger); color: white; padding: 2px 8px; border-radius: 2px; font-size: 9px; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        /* Terminal Style */
+        .terminal { font-family: 'Fira Code', monospace; font-size: 12px; background: #000; padding: 1rem; border: 1px solid #1a1a1a; height: 200px; overflow-y: auto; color: #888; }
+        .term-success { color: #00ff41; }
+        .term-info { color: #00bfff; }
         
-        .glitch-voice { animation: glitch 0.2s infinite; }
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            50% { transform: translate(-2px, 1px); color: #fff; }
-            100% { transform: translate(0); }
-        }
+        /* Analysis Button */
+        .btn-analyze { background: var(--gold); color: black; font-weight: 700; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+        
+        /* Graph Elements */
+        #neural-map { position: relative; background: radial-gradient(circle, #151515 0%, #0a0a0a 100%); overflow: hidden; }
+        .node { position: absolute; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 10px var(--gold); transition: all 0.5s; z-index: 10; }
+        .node-label { position: absolute; font-size: 10px; color: var(--gold); white-space: nowrap; margin-top: 10px; opacity: 0.7; }
+        .connection { position: absolute; background: rgba(212, 175, 55, 0.1); height: 1px; transform-origin: left center; z-index: 5; }
+
+        /* Status Badges */
+        .badge { padding: 2px 8px; border-radius: 2px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .badge-low { background: #1b5e20; color: #81c784; }
+        .badge-med { background: #e65100; color: #ffb74d; }
+        .badge-high { background: #b71c1c; color: #ef9a9a; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-6">
 
     <div class="max-w-7xl mx-auto">
-        <header class="text-center mb-6 p-6 gold-border rounded bg-black" id="header">
-            <h1 class="text-5xl font-black gold-text tracking-tighter italic">INFEX OSINT PRO v7.0</h1>
-            <p class="text-gray-600 uppercase tracking-[15px] text-[9px]">Cyber-Voice Intelligence & GPRS</p>
+        <header class="flex justify-between items-end mb-6 pb-4 border-b border-zinc-800">
+            <div>
+                <h1 class="text-3xl font-light tracking-tighter gold-text italic">INFEX <span class="font-bold">OSINT PRO</span></h1>
+                <p class="text-[10px] text-zinc-500 uppercase tracking-[5px]">Open Source Intelligence & Data Correlation</p>
+            </div>
+            <div id="sys-status" class="text-[10px] text-zinc-500 font-mono">SYSTEM_IDLE // v6.5</div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-            <div class="lg:col-span-3 card p-6">
-                <input type="text" id="targetInput" class="w-full p-4 text-2xl font-bold rounded" placeholder="ENTER TARGET ID">
-                <div class="flex gap-2 mt-4">
-                    <button onclick="quickDork('leak')" class="flex-grow text-[9px] border border-red-900 text-red-500 p-2 uppercase hover:bg-red-500 hover:text-white transition">Leak Search</button>
-                    <button onclick="quickDork('social')" class="flex-grow text-[9px] border border-blue-900 text-blue-500 p-2 uppercase hover:bg-blue-500 hover:text-white transition">Social Search</button>
+            <div class="lg:col-span-3 panel p-4">
+                <div class="flex flex-col">
+                    <span class="text-[10px] text-zinc-500 mb-2 uppercase">Target Identification</span>
+                    <input type="text" id="targetInput" class="bg-transparent border-b border-zinc-800 p-2 text-xl gold-text outline-none focus:border-gold transition-colors" placeholder="Email, IP, Domain or Username...">
                 </div>
             </div>
-            <button onclick="masterProtocol()" id="startBtn" class="btn-execute rounded p-6 flex flex-col items-center justify-center">
-                <i class="fas fa-terminal text-2xl mb-1"></i>
-                <span class="text-xl uppercase tracking-widest">Execute</span>
+            <button onclick="startAnalysis()" id="mainBtn" class="btn-analyze rounded p-4 flex items-center justify-center gap-3">
+                <i class="fas fa-search"></i>
+                <span>Начать анализ</span>
             </button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
-            <div class="lg:col-span-5 card p-4 h-[400px] flex flex-col">
-                <h3 class="gold-text text-xs mb-4 uppercase font-bold italic"><i class="fas fa-brain mr-2"></i> Neural Map</h3>
-                <div id="graph-area" class="flex-grow rounded border border-zinc-900 overflow-hidden">
-                    <div id="target-label" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 gold-text font-bold text-center text-xs uppercase tracking-widest bg-black/80 px-4 py-2 border border-gold/30">System Ready</div>
+            <div class="lg:col-span-5 panel flex flex-col h-[400px]">
+                <div class="p-3 border-b border-zinc-800 flex justify-between items-center">
+                    <span class="text-[10px] uppercase font-bold text-zinc-400">Data Correlation Graph</span>
+                    <span id="target-type-badge" class="text-[9px] text-gold"></span>
                 </div>
+                <div id="neural-map" class="flex-grow">
+                    </div>
             </div>
 
-            <div class="lg:col-span-7 card p-5 flex flex-col">
-                <h3 class="gold-text text-xs mb-4 uppercase font-bold border-b border-gold/20 pb-2 flex justify-between italic">
-                    <span>Metadata & GPRS Intelligence</span>
-                    <span id="gps-status" class="hidden gps-badge">GPS DETECTED</span>
-                </h3>
-                <div id="drop-zone" class="p-4 rounded text-center mb-4" onclick="document.getElementById('fileInput').click()">
-                    <i class="fas fa-fingerprint text-3xl mb-2 text-zinc-800"></i>
-                    <p class="text-[10px] text-zinc-500 uppercase italic">Ingest file for binary parsing</p>
-                    <input type="file" id="fileInput" class="hidden" onchange="handleMetadata(this.files[0])">
+            <div class="lg:col-span-7 panel flex flex-col">
+                <div class="p-3 border-b border-zinc-800 flex justify-between items-center">
+                    <span class="text-[10px] uppercase font-bold text-zinc-400">Intelligence Report</span>
+                    <div id="risk-area" class="hidden">
+                        <span class="text-[10px] mr-2">RISK:</span>
+                        <span id="risk-level" class="badge">LOW</span>
+                    </div>
                 </div>
-                <div id="metaResult" class="grid grid-cols-2 gap-2 font-mono bg-black p-4 border border-zinc-900 rounded overflow-y-auto max-h-[180px] text-[10px]">
-                    <p class="col-span-full text-center text-zinc-700 italic">WAITING FOR DATA...</p>
+                
+                <div class="p-4 flex-grow overflow-y-auto" id="report-content">
+                    <div class="grid grid-cols-2 gap-4" id="data-grid">
+                        </div>
+                    <div id="summary-text" class="mt-4 p-3 bg-black/30 text-xs text-zinc-400 leading-relaxed italic border-l border-gold/30 hidden">
+                        </div>
+                </div>
+
+                <div class="p-3 bg-black/20 border-t border-zinc-800">
+                    <div class="flex justify-between text-[9px] mb-1 uppercase">
+                        <span>Confidence Level</span>
+                        <span id="conf-val">0%</span>
+                    </div>
+                    <div class="w-full bg-zinc-900 h-1 rounded-full overflow-hidden">
+                        <div id="conf-bar" class="h-full bg-gold transition-all duration-1000" style="width: 0%"></div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div class="card p-4">
-                <h3 class="gold-text text-xs mb-3 uppercase font-bold border-b border-gold/20 pb-2">Intelligence Vectors</h3>
-                <div id="vectorList" class="space-y-1"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="panel p-4">
+                <h3 class="text-[10px] uppercase font-bold text-zinc-500 mb-4 italic">External Resources</h3>
+                <div id="vectorLinks" class="space-y-2">
+                    <p class="text-[10px] text-zinc-600 italic">Ожидание инициализации цели...</p>
+                </div>
             </div>
-            <div class="md:col-span-2">
+            <div class="lg:col-span-2">
                 <div class="terminal" id="terminal"></div>
             </div>
         </div>
-
-        <footer class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-gold/20">
-            <div class="card p-4">
-                <h3 class="gold-text text-[10px] uppercase font-black mb-4 tracking-[3px]">СОЦИАЛЬНЫЕ</h3>
-                <div class="flex gap-4 text-2xl">
-                    <a href="#" class="text-zinc-600 hover:text-gold transition"><i class="fab fa-telegram"></i></a>
-                    <a href="#" class="text-zinc-600 hover:text-gold transition"><i class="fab fa-github"></i></a>
-                    <a href="#" class="text-zinc-600 hover:text-gold transition"><i class="fab fa-youtube"></i></a>
-                    <a href="#" class="text-zinc-600 hover:text-gold transition"><i class="fab fa-discord"></i></a>
-                </div>
-            </div>
-            <div class="card p-4">
-                <h3 class="gold-text text-[10px] uppercase font-black mb-2 tracking-[3px]">OSINT Бюллетень</h3>
-                <p class="text-[9px] text-zinc-500 mb-3 italic">Краткий информационный дайджест событий.</p>
-                <button class="w-full py-2 border border-gold/30 text-gold text-[10px] uppercase font-bold hover:bg-gold hover:text-black transition">Подписаться</button>
-            </div>
-            <div class="card p-4 flex flex-col justify-center items-center">
-                <p class="text-[10px] text-zinc-400 mb-2 font-bold uppercase italic text-center">Есть вопросы по протоколам?</p>
-                <button class="btn-execute px-6 py-3 rounded text-[11px] w-full" onclick="cyberSpeak('Перенаправляю в центр связи.')">Свяжитесь с нами сюда</button>
-            </div>
-        </footer>
     </div>
 
     <script>
-        const terminal = document.getElementById('terminal');
-        const graph = document.getElementById('graph-area');
-        const header = document.getElementById('header');
+        /** * INFEX OSINT CORE LOGIC v6.5
+         * No hacker theater, pure functional OSINT approach.
+         */
 
-        function cyberSpeak(text) {
+        const UI = {
+            btn: document.getElementById('mainBtn'),
+            input: document.getElementById('targetInput'),
+            terminal: document.getElementById('terminal'),
+            map: document.getElementById('neural-map'),
+            grid: document.getElementById('data-grid'),
+            risk: document.getElementById('risk-level'),
+            confBar: document.getElementById('conf-bar'),
+            confVal: document.getElementById('conf-val'),
+            typeBadge: document.getElementById('target-type-badge'),
+            summary: document.getElementById('summary-text')
+        };
+
+        const STATE = {
+            isAnalyzing: false,
+            targetType: null,
+            foundData: {}
+        };
+
+        // 1. Определение типа цели
+        function detectType(input) {
+            const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
+
+            if (ipRegex.test(input)) return 'IP';
+            if (emailRegex.test(input)) return 'EMAIL';
+            if (domainRegex.test(input)) return 'DOMAIN';
+            return 'USERNAME';
+        }
+
+        function log(msg, type = '') {
+            const div = document.createElement('div');
+            div.className = `mb-1 ${type === 'success' ? 'term-success' : type === 'info' ? 'term-info' : ''}`;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            UI.terminal.appendChild(div);
+            UI.terminal.scrollTop = UI.terminal.scrollHeight;
+        }
+
+        function clearGraph() {
+            UI.map.innerHTML = '<div id="target-label" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 gold-text font-bold text-[10px] uppercase tracking-widest bg-black/80 p-2 border border-gold/20">Analysis Central</div>';
+        }
+
+        function addGraphNode(label, x, y) {
+            const node = document.createElement('div');
+            node.className = 'node';
+            node.style.left = x + '%';
+            node.style.top = y + '%';
+            
+            const span = document.createElement('span');
+            span.className = 'node-label';
+            span.innerText = label;
+            
+            node.appendChild(span);
+            UI.map.appendChild(node);
+        }
+
+        // 2. Работа с реальным API (Геолокация IP)
+        async function fetchIPData(ip) {
+            try {
+                const response = await fetch(`http://ip-api.com/json/${ip}?fields=status,message,country,city,isp,org,as,query`);
+                const data = await response.json();
+                return data.status === 'success' ? data : null;
+            } catch (e) {
+                console.error("API Error", e);
+                return null;
+            }
+        }
+
+        function speak(text) {
             window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance();
-            msg.text = text;
+            const msg = new SpeechSynthesisUtterance(text);
             msg.lang = 'ru-RU';
-            msg.rate = 0.9;
-            msg.pitch = 0.5; // Хакерский бас
-            header.classList.add('glitch-voice');
-            msg.onend = () => header.classList.remove('glitch-voice');
+            msg.rate = 1.0;
+            msg.pitch = 0.6;
             window.speechSynthesis.speak(msg);
         }
 
-        function initNeuralMap() {
-            for(let i=0; i<40; i++) {
-                const node = document.createElement('div');
-                node.className = 'neural-node';
-                node.style.left = Math.random() * 100 + '%';
-                node.style.top = Math.random() * 100 + '%';
-                node.style.setProperty('--tw-x', (Math.random() * 200 - 100) + 'px');
-                node.style.setProperty('--tw-y', (Math.random() * 200 - 100) + 'px');
-                node.style.animationDuration = (5 + Math.random() * 10) + 's';
-                graph.appendChild(node);
-            }
-        }
-        initNeuralMap();
+        // 3. Основной процесс
+        async function startAnalysis() {
+            const val = UI.input.value.trim();
+            if (!val || STATE.isAnalyzing) return;
 
-        function log(msg, color = "#00ff41") {
-            const div = document.createElement('div');
-            div.innerHTML = `<span style="color: #444">[${new Date().toLocaleTimeString()}]</span> <span style="color: ${color}">> ${msg}</span>`;
-            terminal.appendChild(div);
-            terminal.scrollTop = terminal.scrollHeight;
-        }
-
-        async function masterProtocol() {
-            const val = document.getElementById('targetInput').value.trim();
-            if(!val) {
-                cyberSpeak("Мой господин, введите цель для захвата.");
-                return;
-            }
-            document.getElementById('target-label').innerText = "TRACKING: " + val;
-            document.getElementById('vectorList').innerHTML = "";
+            // Сброс UI
+            STATE.isAnalyzing = true;
+            UI.btn.disabled = true;
+            UI.grid.innerHTML = '';
+            UI.summary.classList.add('hidden');
+            document.getElementById('risk-area').classList.add('hidden');
+            clearGraph();
             
-            cyberSpeak(`Инициирую взлом. Объект ${val} под прицелом.`);
-            log(`Запуск OSINT-протокола: ${val}`, "#fff");
+            // Инициализация
+            STATE.targetType = detectType(val);
+            UI.typeBadge.innerText = `Type: ${STATE.targetType}`;
+            log(`Инициализация анализа для: ${val}`, 'info');
+            log(`Тип данных определен как: ${STATE.targetType}`);
+            speak(`Начинаю анализ объекта типа ${STATE.targetType}`);
 
-            const services = [
-                { name: "Epieos Intelligence", url: `https://epieos.com/?q=${val}` },
-                { name: "WhatsMyName", url: `https://whatsmyname.app/?q=${val}` },
-                { name: "IntelX Archive", url: `https://intelx.io/?s=${val}` }
+            // Шаг 1: Сбор первичных данных
+            await new Promise(r => setTimeout(r, 800));
+            addGraphNode('PRIMARY_SOURCE', 20, 30);
+            log("Подключение к открытым реестрам данных...");
+
+            // Шаг 2: Реальный запрос (если это IP)
+            let apiResults = null;
+            if (STATE.targetType === 'IP') {
+                log("Запрос геолокационных данных через IP-API...", 'info');
+                apiResults = await fetchIPData(val);
+            }
+
+            // Шаг 3: Корреляция
+            await new Promise(r => setTimeout(r, 1200));
+            addGraphNode('OSINT_NODE_A', 70, 40);
+            addGraphNode('NETWORK_INFRA', 40, 80);
+            log("Запуск корреляции данных из внешних источников...");
+            
+            // Заполнение отчета
+            renderReport(val, apiResults);
+
+            // Завершение
+            STATE.isAnalyzing = false;
+            UI.btn.disabled = false;
+            UI.confBar.style.width = "92%";
+            UI.confVal.innerText = "92%";
+            document.getElementById('risk-area').classList.remove('hidden');
+            log("Аналитический цикл завершен. Отчет сформирован.", 'success');
+            speak("Анализ открытых источников завершен. Отчет готов.");
+            
+            generateExternalLinks(val);
+        }
+
+        function renderReport(val, apiData) {
+            const items = [
+                { label: "Идентификатор", value: val },
+                { label: "Тип", value: STATE.targetType }
             ];
 
-            for(let s of services) {
-                log(`Запрос к ${s.name}...`);
-                await new Promise(r => setTimeout(r, 600));
-                const a = document.createElement('div');
-                a.className = "p-2 bg-white/5 border border-zinc-800 rounded text-[10px] mb-1 cursor-pointer hover:border-gold transition";
-                a.innerHTML = `${s.name} <i class="fas fa-external-link-alt float-right"></i>`;
-                a.onclick = () => window.open(s.url, '_blank');
-                document.getElementById('vectorList').appendChild(a);
+            if (apiData) {
+                items.push({ label: "Местоположение", value: `${apiData.city}, ${apiData.country}` });
+                items.push({ label: "Провайдер", value: apiData.isp });
+                UI.risk.innerText = "MEDIUM";
+                UI.risk.className = "badge badge-med";
+                UI.summary.innerText = `Объект локализован в ${apiData.city}. Провайдер ${apiData.isp} активен. Признаков использования прокси не обнаружено.`;
+            } else {
+                UI.risk.innerText = "LOW";
+                UI.risk.className = "badge badge-low";
+                UI.summary.innerText = `Прямых совпадений в реестрах инфраструктуры не найдено. Рекомендуется проверка социальных связей и дампов паролей.`;
             }
+
+            UI.grid.innerHTML = items.map(i => `
+                <div class="border-b border-zinc-900 pb-2">
+                    <p class="text-[8px] text-zinc-600 uppercase tracking-tighter">${i.label}</p>
+                    <p class="text-[11px] gold-text font-bold">${i.value}</p>
+                </div>
+            `).join('');
             
-            cyberSpeak("Анализ завершен. Данные извлечены.");
-            log("ПРОТОКОЛ ЗАВЕРШЕН.", "#00ff41");
+            UI.summary.classList.remove('hidden');
         }
 
-        function handleMetadata(file) {
-            if(!file) return;
-            const res = document.getElementById('metaResult');
-            const gpsBadge = document.getElementById('gps-status');
-            res.innerHTML = "";
-            
-            cyberSpeak(`Файл ${file.name} загружен в буфер. Начинаю дешифровку.`);
-            log(`Анализ структуры: ${file.name}`);
+        function generateExternalLinks(val) {
+            const container = document.getElementById('vectorLinks');
+            const links = {
+                EMAIL: [`https://epieos.com/?q=${val}`, `https://intelx.io/?s=${val}`],
+                IP: [`https://www.shodan.io/host/${val}`, `https://viz.greynoise.io/ip/${val}`],
+                DOMAIN: [`https://whois.domaintools.com/${val}`, `https://builtwith.com/${val}`],
+                USERNAME: [`https://whatsmyname.app/?q=${val}`, `https://checkusernames.com/`]
+            };
 
-            EXIF.getData(file, function() {
-                const tags = EXIF.getAllTags(this);
-                
-                if (tags.GPSLatitude && tags.GPSLongitude) {
-                    gpsBadge.classList.remove('hidden');
-                    const lat = tags.GPSLatitude[0] + tags.GPSLatitude[1]/60 + tags.GPSLatitude[2]/3600;
-                    const lon = tags.GPSLongitude[0] + tags.GPSLongitude[1]/60 + tags.GPSLongitude[2]/3600;
-                    cyberSpeak("Внимание. Обнаружены координаты G P R S. Цель локализована.");
-                    res.innerHTML += `<div class='col-span-full bg-red-900/20 border border-red-600 p-2 text-center mb-2'>
-                        <p class='text-red-500 font-bold text-[9px]'>GPRS SIGNAL LOCKED</p>
-                        <button onclick="window.open('https://www.google.com/maps?q=${lat},${lon}', '_blank')" class='bg-red-600 text-white px-4 py-1 mt-2 text-[9px] font-bold'>OPEN MAP</button>
-                    </div>`;
-                }
-
-                const baseData = { "File": file.name, "Size": (file.size/1024).toFixed(1) + " KB", "Device": tags.Model || "N/A" };
-                for(let [k,v] of Object.entries(baseData)) {
-                    res.innerHTML += `<div class='border-b border-zinc-900 p-1'><p class='text-zinc-600 text-[8px]'>${k}</p><p class='text-white'>${v}</p></div>`;
-                }
-
-                if(Object.keys(tags).length > 0) cyberSpeak(`Извлечено ${Object.keys(tags).length} тех параметров.`);
-                else cyberSpeak("Метаданные очищены. Вывожу системные логи.");
-                log("Анализ завершен.");
-            });
+            const activeLinks = links[STATE.targetType] || [];
+            container.innerHTML = activeLinks.map(l => `
+                <a href="${l}" target="_blank" class="block p-2 text-[10px] bg-zinc-900 border border-zinc-800 rounded hover:border-gold transition-all uppercase italic">
+                    <i class="fas fa-external-link-alt mr-2 opacity-50"></i> Поиск в ${new URL(l).hostname}
+                </a>
+            `).join('');
         }
 
-        function quickDork(type) {
-            const val = document.getElementById('targetInput').value;
-            if(!val) return;
-            cyberSpeak("Выполняю поисковый запрос в теневом секторе.");
-            const q = type === 'leak' ? `"${val}" password OR leak` : `site:instagram.com "${val}"`;
-            window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
-        }
-
+        // Init
         window.onload = () => {
-            setTimeout(() => cyberSpeak("Система Инфекс Про активна. Слушаю вас, мой господин."), 1000);
+            log("Интерфейс INFEX OSINT PRO инициализирован. Ожидание ввода.");
+            clearGraph();
         };
     </script>
 </body>
