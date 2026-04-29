@@ -6,18 +6,16 @@
     <title>INFEX OSINT | GOLD ELITE EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* GOLD PRESET */
         :root { 
             --gold-primary: #d4af37; 
             --gold-light: #fcf6ba; 
             --gold-dark: #aa771c;
             --dark: #050505; 
-            --panel: #0a0a0a;
-            --neon: #00ff41; 
-            --danger: #ff3e3e; 
+            --panel: rgba(10, 10, 10, 0.9);
         }
 
         body { 
@@ -28,217 +26,163 @@
             background-image: radial-gradient(circle at 50% -20%, #1a1508 0%, var(--dark) 80%);
         }
 
-        /* PREMIUM BORDERS & SHADOWS */
-        .gold-border { 
-            border: 1px solid var(--gold-primary); 
-            box-shadow: 0 0 25px rgba(212,175,55,0.15), inset 0 0 10px rgba(212,175,55,0.05); 
-        }
-
+        /* 3D GOLD TEXT EFFECT */
         .gold-text { 
-            background: linear-gradient(to bottom, var(--gold-light) 0%, var(--gold-primary) 50%, var(--gold-dark) 100%);
+            background: linear-gradient(to bottom, #fcf6ba 0%, #d4af37 40%, #aa771c 50%, #d4af37 60%, #fcf6ba 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 8px rgba(212,175,55,0.5));
+            filter: drop-shadow(0 0 15px rgba(212,175,55,0.4));
             font-weight: 900;
+            position: relative;
+            transform: translateZ(50px);
         }
 
-        .card { 
-            background: linear-gradient(145deg, #0f0f0f, #050505);
-            border: 1px solid rgba(212,175,55,0.2); 
-            border-radius: 8px; 
-            box-shadow: 10px 10px 20px #030303, -5px -5px 15px #0a0a0a;
+        /* 3D CARD ENHANCEMENT */
+        .card-3d { 
+            background: var(--panel);
+            border: 1px solid rgba(212,175,55,0.3); 
+            border-radius: 12px; 
+            box-shadow: 20px 20px 50px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
         }
 
-        /* ELITE BUTTON */
+        .gold-border-glow {
+            box-shadow: 0 0 30px rgba(212,175,55,0.2), inset 0 0 20px rgba(212,175,55,0.05);
+        }
+
+        /* ELITE BUTTON 3D */
         .btn-execute { 
-            background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fcf6ba, #bf953f);
-            background-size: 200% auto;
+            background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fcf6ba, #bf953f);
+            background-size: 400% 400%;
             color: #000; 
             font-weight: 900; 
-            transition: 0.5s; 
-            cursor: pointer; 
             border: none; 
             text-transform: uppercase;
             letter-spacing: 2px;
-            animation: shine 3s linear infinite;
-        }
-        @keyframes shine { to { background-position: 200% center; } }
-        .btn-execute:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 0 40px rgba(212,175,55,0.6); }
-
-        /* NEURAL MAP CUSTOMIZATION */
-        #graph-area { background: #000; position: relative; overflow: hidden; border-radius: 4px; }
-        .neural-node { 
-            position: absolute; 
-            width: 3px; height: 3px; 
-            background: var(--gold-light); 
-            border-radius: 50%; 
-            box-shadow: 0 0 10px var(--gold-primary);
+            animation: goldFlow 5s ease infinite;
+            transform: translateZ(30px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
 
-        /* TERMINAL & INPUT */
+        @keyframes goldFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* TERMINAL EFFECT */
         .terminal { 
-            background: rgba(0,0,0,0.9); 
-            border: 1px solid rgba(212,175,55,0.1); 
-            height: 200px; 
-            color: var(--neon); 
-            border-left: 4px solid var(--gold-primary);
-            box-shadow: inset 0 0 20px rgba(0,255,65,0.05);
+            background: rgba(0,0,0,0.95); 
+            border-left: 5px solid var(--gold-primary);
+            box-shadow: 0 0 40px rgba(212,175,55,0.1);
         }
+
         input { 
             background: #000 !important; 
-            border: 1px solid rgba(212,175,55,0.3) !important; 
+            border: 1px solid rgba(212,175,55,0.4) !important; 
             color: var(--gold-light) !important; 
-            box-shadow: inset 0 0 10px rgba(212,175,55,0.1);
-        }
-        input:focus { border-color: var(--gold-primary) !important; box-shadow: 0 0 15px rgba(212,175,55,0.2); }
-
-        .gps-badge { 
-            background: linear-gradient(45deg, #ff0000, #8b0000); 
-            box-shadow: 0 0 15px rgba(255,0,0,0.5);
-            padding: 4px 12px;
-            font-weight: bold;
+            text-shadow: 0 0 10px rgba(212,175,55,0.5);
         }
 
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #050505; }
-        ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 10px; }
+        /* CUSTOM PARTICLES CANVAS */
+        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
     </style>
 </head>
 <body class="p-4 md:p-8">
+    <canvas id="bg-canvas"></canvas>
 
     <div class="max-w-7xl mx-auto">
-        <header class="text-center mb-8 p-10 gold-border rounded-xl bg-black relative overflow-hidden" id="header">
-            <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-            
-            <h1 class="text-6xl font-black gold-text tracking-tighter italic mb-2">INFEX OSINT v7.0</h1>
-            <p class="text-zinc-500 uppercase tracking-[20px] text-[10px] font-bold">Gold Elite Intelligence System</p>
+        <!-- HEADER WITH 3D TILT -->
+        <header class="text-center mb-12 p-12 card-3d gold-border-glow relative overflow-hidden" data-tilt data-tilt-glare data-tilt-max-glare="0.3">
+            <div class="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+            <h1 class="text-7xl font-black gold-text italic tracking-tighter mb-4">INFEX OSINT v7.0</h1>
+            <p class="text-zinc-500 uppercase tracking-[25px] text-[10px] font-bold">Gold Elite Intelligence System</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-            <div class="lg:col-span-3 card p-8">
-                <label class="text-[10px] text-zinc-500 uppercase mb-2 block tracking-widest font-bold">Target Identification / Анализ объекта</label>
-                <input type="text" id="targetInput" class="w-full p-5 text-3xl font-black rounded-lg outline-none transition-all" placeholder="ENTER UID OR IP">
-                <div class="flex gap-4 mt-6">
-                    <button onclick="quickDork('leak')" class="flex-grow text-[10px] border border-zinc-800 text-zinc-400 p-3 uppercase hover:border-red-600 hover:text-red-500 transition-all font-bold tracking-widest bg-black">Leak Search</button>
-                    <button onclick="quickDork('social')" class="flex-grow text-[10px] border border-zinc-800 text-zinc-400 p-3 uppercase hover:border-blue-600 hover:text-blue-500 transition-all font-bold tracking-widest bg-black">Social Search</button>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+            <div class="lg:col-span-3 card-3d p-10" data-tilt>
+                <label class="text-[10px] text-zinc-500 uppercase mb-3 block tracking-widest font-bold">Target Identification / Анализ объекта</label>
+                <input type="text" id="targetInput" class="w-full p-6 text-4xl font-black rounded-lg outline-none transition-all shadow-2xl" placeholder="ENTER UID OR IP">
+                <div class="flex gap-6 mt-8">
+                    <button onclick="quickDork('leak')" class="flex-grow text-[11px] border border-zinc-800 text-zinc-400 py-4 uppercase hover:border-gold-primary hover:text-gold-light transition-all font-black tracking-widest bg-black">Leak Search</button>
+                    <button onclick="quickDork('social')" class="flex-grow text-[11px] border border-zinc-800 text-zinc-400 py-4 uppercase hover:border-gold-primary hover:text-gold-light transition-all font-black tracking-widest bg-black">Social Search</button>
                 </div>
             </div>
-            <button onclick="masterProtocol()" id="startBtn" class="btn-execute rounded-lg p-6 flex flex-col items-center justify-center group">
-                <i class="fas fa-bolt text-3xl mb-2 group-hover:scale-125 transition-transform"></i>
-                <span class="text-2xl font-black uppercase tracking-tighter">Execute</span>
-                <span class="text-[9px] mt-1 opacity-70">Master Protocol</span>
+            
+            <button onclick="masterProtocol()" id="startBtn" class="btn-execute rounded-xl p-6 flex flex-col items-center justify-center group" data-tilt data-tilt-scale="1.05">
+                <i class="fas fa-crown text-4xl mb-3 group-hover:rotate-12 transition-transform"></i>
+                <span class="text-3xl font-black uppercase tracking-tighter">Execute</span>
+                <span class="text-[10px] mt-2 opacity-80 font-bold">Gold Protocol</span>
             </button>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
-            <div class="lg:col-span-5 card p-6 h-[450px] flex flex-col">
-                <h3 class="gold-text text-sm mb-4 uppercase font-black italic flex items-center">
-                    <span class="w-2 h-2 bg-gold-primary rounded-full mr-3 animate-pulse"></span>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+            <div class="lg:col-span-5 card-3d p-8 h-[500px] flex flex-col" data-tilt>
+                <h3 class="gold-text text-sm mb-6 uppercase font-black italic flex items-center">
+                    <span class="w-3 h-3 bg-gold-primary rounded-full mr-4 animate-ping"></span>
                     Neural Core Mapping
                 </h3>
-                <div id="graph-area" class="flex-grow border border-zinc-900 overflow-hidden shadow-inner">
-                    <div id="target-label" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 text-white font-black text-center text-xs uppercase tracking-widest bg-black/90 px-6 py-3 border-y border-gold-primary">
+                <div id="graph-area" class="flex-grow border border-gold-primary/10 rounded-lg overflow-hidden bg-black/50 relative">
+                    <div id="target-label" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 text-white font-black text-center text-[10px] uppercase tracking-widest bg-black/95 px-8 py-4 border border-gold-primary shadow-2xl">
                         System Ready
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-7 card p-6 flex flex-col">
-                <h3 class="gold-text text-sm mb-4 uppercase font-black border-b border-gold-primary/20 pb-4 flex justify-between italic">
-                    <span>Forensic GPRS & Binary Metadata</span>
-                    <span id="gps-status" class="hidden gps-badge rounded text-[10px] animate-bounce">SIGNAL LOCKED</span>
+            <div class="lg:col-span-7 card-3d p-8 flex flex-col" data-tilt>
+                <h3 class="gold-text text-sm mb-6 uppercase font-black border-b border-gold-primary/20 pb-4 flex justify-between italic">
+                    <span>Forensic GPRS & Metadata</span>
+                    <span id="gps-status" class="hidden bg-red-600 px-3 py-1 rounded text-[10px] animate-pulse">LIVE TRACKING</span>
                 </h3>
-                <div id="drop-zone" class="p-8 rounded-lg text-center mb-6 border-2 border-dashed border-zinc-900 hover:border-gold-primary/50 transition-all cursor-pointer group" onclick="document.getElementById('fileInput').click()">
-                    <i class="fas fa-microchip text-4xl mb-3 text-zinc-800 group-hover:text-gold-primary transition-colors"></i>
-                    <p class="text-[11px] text-zinc-500 uppercase italic tracking-widest">Drop secure file for deep analysis</p>
+                <div id="drop-zone" class="p-12 rounded-xl text-center mb-8 border-2 border-dashed border-gold-primary/20 hover:border-gold-primary transition-all cursor-pointer bg-black/40 group" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-fingerprint text-5xl mb-4 text-zinc-800 group-hover:text-gold-primary transition-all group-hover:scale-110"></i>
+                    <p class="text-[12px] text-zinc-400 uppercase italic tracking-[5px]">Upload Secure Artifact</p>
                     <input type="file" id="fileInput" class="hidden" onchange="handleMetadata(this.files[0])">
                 </div>
-                <div id="metaResult" class="grid grid-cols-2 gap-3 font-mono bg-black/50 p-6 border border-zinc-900 rounded-lg overflow-y-auto max-h-[220px] text-[11px]">
-                    <p class="col-span-full text-center text-zinc-700 italic tracking-[5px]">IDLE_LISTENING...</p>
+                <div id="metaResult" class="grid grid-cols-2 gap-4 font-mono bg-black/80 p-8 border border-gold-primary/10 rounded-lg overflow-y-auto max-h-[250px] text-[11px]">
+                    <p class="col-span-full text-center text-zinc-800 italic tracking-[10px]">WAITING_FOR_INPUT...</p>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <div class="card p-6">
-                <h3 class="gold-text text-xs mb-4 uppercase font-black border-b border-gold-primary/20 pb-2 italic">Intelligence Vectors</h3>
-                <div id="vectorList" class="space-y-2"></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div class="card-3d p-8" data-tilt>
+                <h3 class="gold-text text-xs mb-6 uppercase font-black border-b border-gold-primary/20 pb-3 italic">Vectors</h3>
+                <div id="vectorList" class="space-y-3"></div>
             </div>
             <div class="md:col-span-2">
-                <div class="terminal p-6 rounded-lg shadow-2xl" id="terminal"></div>
+                <div class="terminal p-8 rounded-xl h-full shadow-2xl overflow-y-auto font-mono text-sm" id="terminal"></div>
             </div>
         </div>
-
-        <footer class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-10 border-t border-gold-primary/30">
-            <div class="card p-6 border-l-4 border-l-gold-primary">
-                <h3 class="gold-text text-[11px] uppercase font-black mb-5 tracking-[4px]">Media Channels</h3>
-                <div class="flex gap-6 text-3xl">
-                    <a href="#" class="text-zinc-700 hover:text-gold-light transition-all transform hover:scale-110"><i class="fab fa-telegram"></i></a>
-                    <a href="#" class="text-zinc-700 hover:text-gold-light transition-all transform hover:scale-110"><i class="fab fa-github"></i></a>
-                    <a href="#" class="text-zinc-700 hover:text-gold-light transition-all transform hover:scale-110"><i class="fab fa-youtube"></i></a>
-                    <a href="#" class="text-zinc-700 hover:text-gold-light transition-all transform hover:scale-110"><i class="fab fa-discord"></i></a>
-                </div>
-            </div>
-            <div class="card p-6">
-                <h3 class="gold-text text-[11px] uppercase font-black mb-3 tracking-[4px]">OSINT Briefing</h3>
-                <p class="text-[10px] text-zinc-500 mb-4 italic leading-relaxed">Получайте эксклюзивные отчеты о новых уязвимостях и методах поиска.</p>
-                <button class="w-full py-3 border border-gold-primary/40 text-gold-primary text-[10px] uppercase font-black hover:bg-gold-primary hover:text-black transition-all tracking-widest">Subscribe</button>
-            </div>
-            <div class="card p-6 flex flex-col justify-center items-center bg-gradient-to-br from-black to-[#1a1508]">
-                <p class="text-[10px] text-zinc-400 mb-4 font-black uppercase italic text-center tracking-widest">Technical Support / HQ</p>
-                <button class="btn-execute px-8 py-4 rounded font-black w-full" onclick="cyberSpeak('Соединяю с главным штабом, мой господин.')">Contact Center</button>
-            </div>
-        </footer>
     </div>
 
     <script>
+        // INIT TILT EFFECT
+        VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
+            max: 5,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.2,
+        });
+
         const terminal = document.getElementById('terminal');
-        const graph = document.getElementById('graph-area');
-        const header = document.getElementById('header');
+        const header = document.querySelector('header');
 
         function cyberSpeak(text) {
             window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance();
-            msg.text = text;
+            const msg = new SpeechSynthesisUtterance(text);
             msg.lang = 'ru-RU';
-            msg.rate = 0.85; // Чуть медленнее для важности
-            msg.pitch = 0.4; // Глубокий премиальный бас
-            header.style.boxShadow = "0 0 50px rgba(212,175,55,0.4)";
-            msg.onend = () => header.style.boxShadow = "0 0 25px rgba(212,175,55,0.15)";
+            msg.rate = 0.9;
+            msg.pitch = 0.5;
             window.speechSynthesis.speak(msg);
         }
 
-        function initNeuralMap() {
-            for(let i=0; i<60; i++) {
-                const node = document.createElement('div');
-                node.className = 'neural-node';
-                node.style.left = Math.random() * 100 + '%';
-                node.style.top = Math.random() * 100 + '%';
-                
-                // Анимация плавного мерцания
-                node.style.animation = `pulse ${2 + Math.random() * 4}s infinite ease-in-out`;
-                node.style.opacity = Math.random();
-                
-                graph.appendChild(node);
-            }
-        }
-        
-        // CSS для анимации нейронов
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes pulse {
-                0%, 100% { transform: scale(1); opacity: 0.3; }
-                50% { transform: scale(1.5); opacity: 0.8; box-shadow: 0 0 15px var(--gold-primary); }
-            }
-        `;
-        document.head.appendChild(style);
-        initNeuralMap();
-
-        function log(msg, color = "#00ff41") {
+        function log(msg, color = "#d4af37") {
             const div = document.createElement('div');
-            div.className = "mb-1 border-b border-white/5 pb-1";
-            div.innerHTML = `<span style="color: #666; font-size: 9px;">[${new Date().toLocaleTimeString()}]</span> <span style="color: ${color}; font-weight: bold;"> STATUS >> ${msg}</span>`;
+            div.className = "mb-2 border-b border-white/5 pb-1 animate-pulse";
+            div.innerHTML = `<span style="color: #444;">[${new Date().toLocaleTimeString()}]</span> <span style="color: ${color}; font-weight: bold;"> > ${msg}</span>`;
             terminal.appendChild(div);
             terminal.scrollTop = terminal.scrollHeight;
         }
@@ -246,79 +190,56 @@
         async function masterProtocol() {
             const val = document.getElementById('targetInput').value.trim();
             if(!val) {
-                cyberSpeak("Мой господин, объект не указан. Введите цель.");
+                cyberSpeak("Мой господин, укажите цель.");
                 return;
             }
-            document.getElementById('target-label').innerHTML = `<span class="animate-pulse text-gold-light">SCANNING: ${val}</span>`;
-            document.getElementById('vectorList').innerHTML = "";
+            cyberSpeak(`Инициирую золотой протокол. Поиск цели ${val}.`);
+            log(`STARTING ELITE PROTOCOL: ${val}`, "#fff");
             
-            cyberSpeak(`Активирую элитный протокол поиска. Цель: ${val}.`);
-            log(`ИНИЦИАЛИЗАЦИЯ КАНАЛОВ СВЯЗИ...`, "#d4af37");
-
+            document.getElementById('target-label').innerHTML = `<span class="animate-pulse text-gold-light">TARGET LOCKED: ${val}</span>`;
+            
             const services = [
-                { name: "Epieos Intelligence", icon: "fa-envelope", url: `https://epieos.com/?q=${val}` },
-                { name: "Social Analyzer", icon: "fa-users", url: `https://whatsmyname.app/?q=${val}` },
-                { name: "IntelX Global", icon: "fa-database", url: `https://intelx.io/?s=${val}` }
+                { name: "Epieos Deep Scan", icon: "fa-search", url: `https://epieos.com/?q=${val}` },
+                { name: "Global Leak Base", icon: "fa-database", url: `https://intelx.io/?s=${val}` }
             ];
 
             for(let s of services) {
-                log(`ПОДКЛЮЧЕНИЕ К ${s.name.toUpperCase()}...`, "#fff");
-                await new Promise(r => setTimeout(r, 700));
+                log(`CONNECTING TO ${s.name.toUpperCase()}...`);
+                await new Promise(r => setTimeout(r, 800));
                 const a = document.createElement('div');
-                a.className = "p-3 bg-black border border-zinc-800 rounded mb-2 cursor-pointer hover:border-gold-primary transition-all flex justify-between items-center group";
-                a.innerHTML = `<span><i class="fas ${s.icon} mr-3 text-zinc-500 group-hover:text-gold-primary"></i>${s.name}</span> <i class="fas fa-chevron-right text-[10px] text-zinc-700"></i>`;
+                a.className = "p-4 bg-black/60 border border-gold-primary/20 rounded-lg mb-3 cursor-pointer hover:border-gold-primary transition-all flex justify-between items-center group";
+                a.innerHTML = `<span class="text-xs"><i class="fas ${s.icon} mr-4 text-gold-primary"></i>${s.name}</span> <i class="fas fa-external-link-alt text-[10px] opacity-0 group-hover:opacity-100 transition-all"></i>`;
                 a.onclick = () => window.open(s.url, '_blank');
                 document.getElementById('vectorList').appendChild(a);
             }
-            
-            cyberSpeak("Протокол выполнен. Все данные в вашем распоряжении, мой господин.");
-            log("ВСЕ СИСТЕМЫ В НОРМЕ. ОТЧЕТ СФОРМИРОВАН.", "#d4af37");
+            cyberSpeak("Данные получены, мой господин.");
         }
 
         function handleMetadata(file) {
             if(!file) return;
-            const res = document.getElementById('metaResult');
-            const gpsBadge = document.getElementById('gps-status');
-            res.innerHTML = "<p class='col-span-full text-gold-primary animate-pulse text-center'>EXTRACTING BINARY DATA...</p>";
+            cyberSpeak("Анализирую структуру файла.");
+            log(`ANALYZING: ${file.name}`, "#fff");
             
-            cyberSpeak(`Файл ${file.name} принят. Начинаю глубокое сканирование метаданных.`);
-            log(`АНАЛИЗ ФАЙЛА: ${file.name.toUpperCase()}`, "#fff");
-
             EXIF.getData(file, function() {
                 const tags = EXIF.getAllTags(this);
+                const res = document.getElementById('metaResult');
                 res.innerHTML = "";
                 
-                if (tags.GPSLatitude && tags.GPSLongitude) {
-                    gpsBadge.classList.remove('hidden');
-                    const lat = tags.GPSLatitude[0] + tags.GPSLatitude[1]/60 + tags.GPSLatitude[2]/3600;
-                    const lon = tags.GPSLongitude[0] + tags.GPSLongitude[1]/60 + tags.GPSLongitude[2]/3600;
-                    cyberSpeak("Внимание. Обнаружены скрытые координаты. Объект локализован.");
-                    res.innerHTML += `<div class='col-span-full bg-red-900/10 border border-red-600/50 p-4 text-center mb-4 rounded-lg'>
-                        <p class='text-red-500 font-black text-[11px] mb-2 tracking-widest italic'>CRITICAL: GPS LOCATION DETECTED</p>
-                        <button onclick="window.open('https://www.google.com/maps?q=${lat},${lon}', '_blank')" class='btn-execute px-6 py-2 rounded text-[10px] font-black'>PROJECT ON MAP</button>
-                    </div>`;
+                if (tags.GPSLatitude) {
+                    document.getElementById('gps-status').classList.remove('hidden');
+                    cyberSpeak("Внимание. Обнаружены GPS координаты.");
                 }
 
-                const baseData = { "FILENAME": file.name, "FILE_SIZE": (file.size/1024).toFixed(1) + " KB", "SOURCE_MODEL": tags.Model || "UNDEFINED" };
-                for(let [k,v] of Object.entries(baseData)) {
-                    res.innerHTML += `<div class='border-b border-zinc-900 p-2'><p class='text-zinc-600 text-[8px] font-bold'>${k}</p><p class='text-gold-light font-bold'>${v}</p></div>`;
+                const info = { "NAME": file.name, "SIZE": (file.size/1024).toFixed(1)+"KB", "CAMERA": tags.Model || "UNKNOWN" };
+                for(let [k,v] of Object.entries(info)) {
+                    res.innerHTML += `<div class='p-3 border-b border-gold-primary/10'><p class='text-[8px] text-zinc-600'>${k}</p><p class='text-gold-light font-bold'>${v}</p></div>`;
                 }
-
-                cyberSpeak(Object.keys(tags).length > 0 ? "Скрытые данные успешно извлечены." : "Метаданные отсутствуют.");
-                log("ОПЕРАЦИЯ ЗАВЕРШЕНА.", "#d4af37");
             });
         }
 
-        function quickDork(type) {
-            const val = document.getElementById('targetInput').value;
-            if(!val) return;
-            cyberSpeak("Выполняю экспресс-поиск в глобальной сети.");
-            const q = type === 'leak' ? `"${val}" password OR leak OR database` : `site:instagram.com OR site:linkedin.com OR site:facebook.com "${val}"`;
-            window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
-        }
-
         window.onload = () => {
-            setTimeout(() => cyberSpeak("Система Инфекс Семь Ноль Голд Эдишн онлайн. Я к вашим услугам, мой господин."), 1000);
+            log("INFEX OSINT GOLD EDITION BOOTED SUCCESSFULLY.", "#d4af37");
+            setTimeout(() => cyberSpeak("Система активна. Приветствую вас, мой господин."), 1000);
         };
     </script>
 </body>
